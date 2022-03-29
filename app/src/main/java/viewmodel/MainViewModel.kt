@@ -14,16 +14,28 @@ class MainViewModel(
         return liveData
     }
 
-    fun getWeather() {
+    fun getWeather( fromServer:Boolean) {
         Thread {
             liveData.postValue(AppState.Loading)
-            if ((0..10).random() > 5){
-                val answer = repository.getWeatherFromServer()
-                //TODO HW val answer = if(узнать локально или сервер) repository.getWeatherFromServer() else repository.getWeatherFromLocalStorage()
-                liveData.postValue(AppState.Success(answer))
+            if (fromServer){
+
+
+                if ((0..10).random() > 5){
+                    val answer = repository.getWeatherFromServer()
+                    liveData.postValue(AppState.Success(answer))
+                }
+                else
+                    liveData.postValue(AppState.Error(IllegalAccessException()))
+
+
+            }else{
+                if ((0..10).random() > 5){
+                    val answer = repository.getWeatherFromLocalStorage()
+                    liveData.postValue(AppState.Success(answer))
+                }
+                else
+                    liveData.postValue(AppState.Error(IllegalAccessException()))
             }
-            else
-                liveData.postValue(AppState.Error(IllegalAccessException()))
         }.start()
     }
 }

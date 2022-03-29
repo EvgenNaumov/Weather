@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Switch
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.appweather.R
@@ -15,7 +16,10 @@ import viewmodel.MainViewModel
 
 class MainFragment : Fragment() {
 
-    lateinit var binding: FragmentMainBinding
+    private var _binding:FragmentMainBinding? = null
+    private val binding get() = _binding!!
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -23,12 +27,13 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_main, container, false)
-        binding = FragmentMainBinding.inflate(inflater, container,false)
+        _binding = FragmentMainBinding.inflate(inflater, container,false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         val observer = object : Observer<AppState> {
@@ -37,7 +42,18 @@ class MainFragment : Fragment() {
             }
         }
         viewModel.getData().observe(viewLifecycleOwner,observer)
-        viewModel.getWeather()
+
+
+
+        val switcher:Switch = binding.switch1
+        switcher.setOnCheckedChangeListener{buttonView, isChecked->
+            if (isChecked){
+                viewModel.getWeather(true)
+            }else{
+                viewModel.getWeather(false)
+            }
+
+        }
     }
 
     private fun renderData(data: AppState) {
@@ -68,6 +84,6 @@ class MainFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-//       binding = null
+       _binding = null
     }
 }
