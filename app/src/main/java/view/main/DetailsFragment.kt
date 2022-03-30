@@ -8,15 +8,14 @@ import android.view.ViewGroup
 import android.widget.Switch
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.example.appweather.R
-import com.example.appweather.databinding.FragmentMainBinding
+import com.example.appweather.databinding.FragmentDetailsBinding
 import com.google.android.material.snackbar.Snackbar
 import viewmodel.AppState
 import viewmodel.MainViewModel
 
-class MainFragment : Fragment() {
+class DetailsFragment : Fragment() {
 
-    private var _binding:FragmentMainBinding? = null
+    private var _binding:FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
 
@@ -27,7 +26,7 @@ class MainFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_main, container, false)
-        _binding = FragmentMainBinding.inflate(inflater, container,false)
+        _binding = FragmentDetailsBinding.inflate(inflater, container,false)
         return binding.root
     }
 
@@ -47,11 +46,13 @@ class MainFragment : Fragment() {
 
         val switcher:Switch = binding.switch1
         switcher.setOnCheckedChangeListener{buttonView, isChecked->
+/*
             if (isChecked){
                 viewModel.getWeather(true)
             }else{
                 viewModel.getWeather(false)
             }
+*/
 
         }
     }
@@ -67,10 +68,10 @@ class MainFragment : Fragment() {
             }
             is AppState.Success -> {
                 binding.loadingLayout.visibility = View.GONE
-                binding.cityName.text = data.weatherData.city.name.toString()
-                binding.temperatureValue.text = data.weatherData.temperature.toString()
-                binding.feelsLikeValue.text = data.weatherData.feelsLike.toString()
-                binding.cityCoordinates.text = "${data.weatherData.city.lat} ${data.weatherData.city.lon}"
+                binding.cityName.text = data.weatherData[0]?.city.name.toString()
+                binding.temperatureValue.text = data.weatherData[0]?.temperature.toString()
+                binding.feelsLikeValue.text = data.weatherData[0]?.feelsLike.toString()
+                binding.cityCoordinates.text = "${data.weatherData[0]?.city.lat} ${data.weatherData[0]?.city.lon}"
                 Snackbar.make(binding.mainView, "Получилось", Snackbar.LENGTH_LONG).show()
                 //Toast.makeText(requireContext(),"РАБОТАЕТ",Toast.LENGTH_SHORT).show()
             }
@@ -79,7 +80,7 @@ class MainFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = MainFragment()
+        fun newInstance() = DetailsFragment()
     }
 
     override fun onDestroy() {
