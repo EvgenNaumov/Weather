@@ -1,17 +1,26 @@
 package view.main
 
+import Utils.KEY_BUNDLE_WEATHER
+import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.example.appweather.R
 import com.example.appweather.databinding.FragmentWeatherListRecyclerItemBinding
 import repository.Weather
+import view.MainActivity
+import view.weatherlist.onItemListClickListener
 
 class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
     private var dataWeather: List<Weather> = listOf()
 
-    fun setDataWeather(data: List<Weather>) {
+    private lateinit var onClick:onItemListClickListener
+
+    fun setDataWeather(onItemListClickListener: onItemListClickListener,data: List<Weather>) {
+        onClick = onItemListClickListener
         dataWeather = data
         notifyDataSetChanged()//DiffUtils ?
     }
@@ -41,14 +50,13 @@ class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolde
             //связываем ViewBinding с контекстом itemView
             val binding = FragmentWeatherListRecyclerItemBinding.bind(itemView)
             binding.RecyclerItemTextView.text = weather.city.name
+
             binding.RecyclerItemTextView.setOnClickListener {
-                Toast.makeText(
-                    itemView.context,
-                    weather.city.name,
-                    Toast.LENGTH_LONG).show()
+                onClick.onItemViewClick(weather)
             }
 
         }
     }
+
 
 }

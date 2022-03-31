@@ -6,20 +6,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
 import com.example.appweather.databinding.FragmentWeatherListBinding
 import com.google.android.material.snackbar.Snackbar
+import repository.Weather
+import view.MainActivity
+import view.weatherlist.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
 
-class WeatherListFragment : Fragment() {
+class WeatherListFragment : Fragment(),onItemListClickListener {
 
-    private var _binding:FragmentWeatherListBinding? = null
+    private var _binding: FragmentWeatherListBinding? = null
     private val binding get() = _binding!!
-
-
+    val adapter: WeatherListAdapter = WeatherListAdapter()
+    var isRussiantrue: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,63 +33,57 @@ class WeatherListFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_main, container, false)
-        _binding = FragmentWeatherListBinding.inflate(inflater, container,false)
+        _binding = FragmentWeatherListBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.RecyclerView.adapter = adapter
         val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         val observer = object : Observer<AppState> {
             override fun onChanged(data: AppState) {
-//                renderData(data)
+                renderData(data)
             }
         }
-        viewModel.getData().observe(viewLifecycleOwner,observer)
+        viewModel.getData().observe(viewLifecycleOwner, observer)
+        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataState(viewModel) }
 
-
-
-//        val switcher:Switch = binding.switch1
-/*
-        switcher.setOnCheckedChangeListener{buttonView, isChecked->
-*/
-/*
-            if (isChecked){
-                viewModel.getWeather(true)
-            }else{
-                viewModel.getWeather(false)
-            }
-*//*
-
-
-        }
-*/
+        viewModel.getWeatherFromLocalSourceRus()
     }
 
-/*
+    private fun changeWeatherDataState(viewModel: MainViewModel) {
+        if (isRussiantrue) {
+            viewModel.getWeatherFromLocalSourceRus()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+        } else {
+            viewModel.getWeatherFromLocalSourceWorld()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+        }
+        isRussiantrue = !isRussiantrue
+    }
+
     private fun renderData(data: AppState) {
-        when (data){
+        when (data) {
             is AppState.Error -> {
-                binding.loadingLayout.visibility = View.GONE
-                Snackbar.make(binding.mainView, "Не получилось ${data.error}", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(
+                    binding.listmainview,
+                    "Не получилось ${data.error}",
+                    Snackbar.LENGTH_LONG
+                ).show()
             }
             is AppState.Loading -> {
-                binding.loadingLayout.visibility = View.VISIBLE
             }
             is AppState.Success -> {
-                binding.loadingLayout.visibility = View.GONE
-                binding.cityName.text = data.weatherData[0]?.city.name.toString()
-                binding.temperatureValue.text = data.weatherData[0]?.temperature.toString()
-                binding.feelsLikeValue.text = data.weatherData[0]?.feelsLike.toString()
-                binding.cityCoordinates.text = "${data.weatherData[0]?.city.lat} ${data.weatherData[0]?.city.lon}"
-                Snackbar.make(binding.mainView, "Получилось", Snackbar.LENGTH_LONG).show()
+                adapter.setDataWeather(this,data.weatherData)
+                //Snackbar.make(binding.listmainview, "Получилось", Snackbar.LENGTH_SHORT).show()
                 //Toast.makeText(requireContext(),"РАБОТАЕТ",Toast.LENGTH_SHORT).show()
             }
         }
     }
-*/
+
 
     companion object {
         @JvmStatic
@@ -92,6 +92,17 @@ class WeatherListFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-       _binding = null
+        _binding = null
+    }
+
+    override fun onItemViewClick(weather: Weather) {
+//        Toast.makeText(
+//            itemView.context,
+//            weather.city.name,
+//            Toast.LENGTH_LONG).show()
+        val bundle = Bundle()
+        bundle.putParcelable(DetailsFragment.BUNDLE_WEATHER,weather)
+        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, DetailsFragment.newInstance(bundle)).addToBackStack("").commit()
+
     }
 }
