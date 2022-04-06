@@ -14,18 +14,26 @@ import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
 import com.example.appweather.databinding.FragmentWeatherListBinding
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.fragment_details.*
 import repository.Weather
+import repository.createAndShow
+import repository.showSnackbar
 import view.MainActivity
 import view.weatherlist.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
 
-class WeatherListFragment : Fragment(),onItemListClickListener {
+class WeatherListFragment : Fragment(), onItemListClickListener {
 
     private var _binding: FragmentWeatherListBinding? = null
     private val binding get() = _binding!!
     private val adapter: WeatherListAdapter = WeatherListAdapter()
     private var isRussiantrue: Boolean = true
+    private lateinit var mainView:View
+
+    private val viewModel:MainViewModel by lazy {
+        ViewModelProvider(this).get(MainViewModel::class.java)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,12 +47,12 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        mainView = binding.listmainview
         initRecyclerView()
 
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
 
         binding.RecyclerView.adapter = adapter
 
@@ -53,10 +61,10 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
                 renderData(data)
             }
         }
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+//        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        // в эот момент создается view а до этого null
         viewModel.getData().observe(viewLifecycleOwner, observer)
         viewModel.getWeatherFromLocalSourceRus()
-
         binding.mainFragmentFAB.setOnClickListener { changeWeatherDataState(viewModel) }
     }
 
@@ -75,18 +83,18 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
     private fun renderData(data: AppState) {
         when (data) {
             is AppState.Error -> {
-                Snackbar.make(
-                    binding.listmainview,
-                    "Не получилось ${data.error}",
-                    Snackbar.LENGTH_LONG
-                ).show()
+
+                mainView.showSnackbar("Не получилось ${data.error}")
+//                Snackbar.make(
+//                    binding.listmainview,
+//                    "Не получилось ${data.error}",
+//                    Snackbar.LENGTH_LONG
+//                ).show()
             }
             is AppState.Loading -> {
             }
             is AppState.Success -> {
-                adapter.setDataWeather(this,data.weatherData)
-                //Snackbar.make(binding.listmainview, "Получилось", Snackbar.LENGTH_SHORT).show()
-                //Toast.makeText(requireContext(),"РАБОТАЕТ",Toast.LENGTH_SHORT).show()
+                adapter.setDataWeather(this, data.weatherData)
             }
         }
     }
@@ -103,13 +111,11 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
     }
 
     override fun onItemViewClick(weather: Weather) {
-//        Toast.makeText(
-//            itemView.context,
-//            weather.city.name,
-//            Toast.LENGTH_LONG).show()
-        val bundle = Bundle()
-        bundle.putParcelable(DetailsFragment.BUNDLE_WEATHER,weather)
-        requireActivity().supportFragmentManager.beginTransaction().replace(R.id.container, DetailsFragment.newInstance(bundle)).addToBackStack("").commit()
+        requireActivity().supportFragmentManager.beginTransaction().replace(
+            R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                this.putParcelable(DetailsFragment.BUNDLE_WEATHER, weather)
+            })
+        ).addToBackStack("").commit()
 
     }
 }

@@ -11,15 +11,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentWeatherListRecyclerItemBinding
 import repository.Weather
+import repository.createAndShow
 import view.MainActivity
 import view.weatherlist.onItemListClickListener
 
 class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
     private var dataWeather: List<Weather> = listOf()
 
-    private lateinit var onClick:onItemListClickListener
+    private lateinit var onClick: onItemListClickListener
 
-    fun setDataWeather(onItemListClickListener: onItemListClickListener,data: List<Weather>) {
+    fun setDataWeather(onItemListClickListener: onItemListClickListener, data: List<Weather>) {
         onClick = onItemListClickListener
         dataWeather = data
         notifyDataSetChanged()//DiffUtils ?
@@ -48,11 +49,12 @@ class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolde
     inner class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(weather: Weather) {
             //связываем ViewBinding с контекстом itemView
-            val binding = FragmentWeatherListRecyclerItemBinding.bind(itemView)
-            binding.RecyclerItemTextView.text = weather.city.name
+            FragmentWeatherListRecyclerItemBinding.bind(itemView).apply {
+                RecyclerItemTextView.text = weather.city.name
 
-            binding.RecyclerItemTextView.setOnClickListener {
-                onClick.onItemViewClick(weather)
+                this.RecyclerItemTextView.setOnClickListener {
+                    onClick.onItemViewClick(weather)
+                }
             }
 
         }
