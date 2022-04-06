@@ -24,13 +24,13 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
 
     private var _binding: FragmentWeatherListBinding? = null
     private val binding get() = _binding!!
-    val adapter: WeatherListAdapter = WeatherListAdapter()
-    var isRussiantrue: Boolean = true
+    private val adapter: WeatherListAdapter = WeatherListAdapter()
+    private var isRussiantrue: Boolean = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         //return inflater.inflate(R.layout.fragment_main, container, false)
         _binding = FragmentWeatherListBinding.inflate(inflater, container, false)
@@ -40,19 +40,26 @@ class WeatherListFragment : Fragment(),onItemListClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        initRecyclerView()
+
+    }
+
+    private fun initRecyclerView(){
+
         binding.RecyclerView.adapter = adapter
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         val observer = object : Observer<AppState> {
             override fun onChanged(data: AppState) {
                 renderData(data)
             }
         }
+        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.getData().observe(viewLifecycleOwner, observer)
-        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataState(viewModel) }
-
         viewModel.getWeatherFromLocalSourceRus()
+
+        binding.mainFragmentFAB.setOnClickListener { changeWeatherDataState(viewModel) }
     }
+
 
     private fun changeWeatherDataState(viewModel: MainViewModel) {
         if (isRussiantrue) {
