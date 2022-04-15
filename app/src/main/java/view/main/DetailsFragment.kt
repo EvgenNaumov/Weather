@@ -11,18 +11,15 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
 import com.google.android.material.snackbar.Snackbar
-import repository.showSnackbar
-import repository.Weather
-import repository.createAndShow
-import repository.showSnackbar
+import kotlinx.android.synthetic.main.fragment_details.view.*
+import repository.*
 import viewmodel.AppState
 import viewmodel.MainViewModel
 
-class DetailsFragment : Fragment() {
-
+class DetailsFragment : Fragment(), OnServerResponse {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
-    private lateinit var mainView:View
+    private lateinit var mainView: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,27 +31,48 @@ class DetailsFragment : Fragment() {
         return binding.root
     }
 
+    lateinit var currentCityName: String
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mainView = binding.mainView
-        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let { renderData(it) }
+
+        mainView.visibility = View.GONE
+        binding.loadingLayout.visibility = View.VISIBLE
+
+        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+            currentCityName = it.city.name
+            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+        }
     }
 
-    private fun renderData(weather: Weather) {
-        binding.apply {
+    private fun renderData(weather: WeatherDTO) {
+        with(binding) {
             this.loadingLayout.visibility = View.GONE
-            with(weather) {
-                cityName.text = city.name
-                temperatureValue.text = temperature.toString()
-                feelsLikeValue.text = feelsLike.toString()
-                cityCoordinates.text = getString(R.string.city_coordinates, city.lat.toString(), city.lon.toString())
+            this.mainView.visibility = View.VISIBLE
+
+            cityName.text = currentCityName
+            temperatureValue.text = weather.fact.temperature.toString()
+            feelsLikeValue.text = weather.fact.feels_like.toString()
+            cityCoordinates.text = getString(
+                R.string.city_coordinates,
+                weather.infoDTO.lat.toString(),
+                weather.infoDTO.lon.toString()
+            )
 //                    "lat: ${city.lat}  lon: ${city.lon}"
-            }
         }
-        mainView.createAndShow("Оповещение","Успешно",{mainView})
-    // "Получилось".showSnackbar(binding.mainView)
+        mainView.createAndShow("Оповещение", "Успешно", { mainView })
+        // "Получилось".showSnackbar(binding.mainView)
     }
+
+    override fun onFailed(err: String) {
+        mainView.loadingLayout.visibility = View.GONE
+        mainView.createAndShow("Результат", err, { mainView })
+    }
+
+    override fun onResponse(weatherDTO: WeatherDTO) {
+        renderData(weatherDTO)
+    }
+
 
     companion object {
         const val BUNDLE_WEATHER: String = "BUNDLE_WEATHER"
