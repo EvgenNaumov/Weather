@@ -1,5 +1,5 @@
 package repository
 
 interface ErrorProcessing {
-    fun onWebApiErrorProcessing(numError:Int, textErr:String)
+    fun onWebApiErrorProcessing(numErr:Int, textErr:String, showAllInfo:Boolean = false)
 }

@@ -3,42 +3,36 @@ package repository
 
 import android.os.Looper
 import android.util.Log
-import android.view.View
-import android.widget.ThemedSpinnerAdapter
 import com.google.gson.Gson
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.lang.Exception
-import java.lang.Thread.sleep
-import java.net.MalformedURLException
 import java.net.URL
 import android.os.Handler;
 import com.example.appweather.BuildConfig
-import org.json.JSONException
 import java.net.HttpURLConnection
+import java.net.MalformedURLException
 import java.util.stream.Collectors
 import javax.net.ssl.HttpsURLConnection
 
 class WeatherLoader {
     private val onServerResponse: OnServerResponse? = null
 
-    private var responseYandex: Boolean = true
 
     fun loadWeather(lat: Double, lon: Double, onServerResponseListener: OnServerResponse) {
-
+        val onErrorProcessing: ErrorProcessing = ErrorProcessingImp(onServerResponseListener)
         try {//https://
-            val uri: URL = URL("https://api.weather.yandex.ru/v2/informers?lat=$lat&lon=$lon")
-            //val uri: URL = URL("http://212.86.114.27/v2/informers?lat=$lat&lon=$lon")
+//            val uri: URL = URL("https://api.weather.yandex.ru/v2/informers?lat=$lat&lon=$lon")
+            val uri: URL = URL("http://212.86.114.27/v2/informers?lat=$lat&lon=$lon")
 
             Thread {
-                lateinit var urlConnection: HttpsURLConnection
-
+//                lateinit var urlConnection: HttpsURLConnection
+                lateinit var urlConnection: HttpURLConnection
                 try {
 
 
                     urlConnection =
-                        (uri.openConnection() as HttpsURLConnection).apply {
+                        (uri.openConnection() as HttpURLConnection).apply {
                             connectTimeout = 1000
                             readTimeout = 1000
                             requestMethod = "GET"
@@ -48,11 +42,29 @@ class WeatherLoader {
                             )
                         }
 
+                    //HW 5
                     val headers = urlConnection.headerFields
                     val responseCode = urlConnection.responseCode
                     val responseMessage = urlConnection.responseMessage
 
-                    ErrorProcessingImp().onWebApiErrorProcessing(responseCode as Int,responseMessage)
+                    var isError: Boolean = false
+                    var errString: String = ""
+                    try {
+//                       onErrorProcessing.onWebApiErrorProcessing(400, "client fail")
+                        onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        errString = e.message.toString()
+                        isError = true
+                        Handler(Looper.getMainLooper()).post {
+                            onServerResponseListener.onFailed(errString)
+                        }
+                    } finally {
+                        if (isError) {
+                            throw IOException(errString)
+                        }
+                    }
+                    //HW 5
 
                     val result = BufferedReader(InputStreamReader(urlConnection.inputStream))
                     //getLineAsOneBigString(buffer)
@@ -67,7 +79,7 @@ class WeatherLoader {
                 } catch (e: IOException) {
                     Log.d("@@@@", "loadWeather: Fail connection")
                     Handler(Looper.getMainLooper()).post {
-                        onServerResponseListener.onFailed("loadWeather: Fail connection")
+                        onServerResponseListener.onFailed("loadWeather: ${e.message.toString()}")
                     }
 
                 } finally {

@@ -1,20 +1,14 @@
 package view.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Switch
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.Fragment
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_details.view.*
 import repository.*
-import viewmodel.AppState
-import viewmodel.MainViewModel
 
 class DetailsFragment : Fragment(), OnServerResponse {
     private var _binding: FragmentDetailsBinding? = null
@@ -47,8 +41,8 @@ class DetailsFragment : Fragment(), OnServerResponse {
 
     private fun renderData(weather: WeatherDTO) {
         with(binding) {
-            this.loadingLayout.visibility = View.GONE
             this.mainView.visibility = View.VISIBLE
+            this.loadingLayout.visibility = View.GONE
 
             cityName.text = currentCityName
             temperatureValue.text = weather.fact.temperature.toString()
@@ -60,13 +54,14 @@ class DetailsFragment : Fragment(), OnServerResponse {
             )
 //                    "lat: ${city.lat}  lon: ${city.lon}"
         }
-        mainView.createAndShow("Оповещение", "Успешно", { mainView })
+        mainView.createAndShow("", "Успешно", { mainView })
         // "Получилось".showSnackbar(binding.mainView)
     }
 
-    override fun onFailed(err: String) {
-        mainView.loadingLayout.visibility = View.GONE
-        mainView.createAndShow("Результат", err, { mainView })
+    override fun onFailed(infoErr: String) {
+        mainView.mainView.visibility = View.GONE
+        binding.loadingLayout.visibility = View.GONE
+        mainView.createAndShow("", infoErr, { mainView })
     }
 
     override fun onResponse(weatherDTO: WeatherDTO) {

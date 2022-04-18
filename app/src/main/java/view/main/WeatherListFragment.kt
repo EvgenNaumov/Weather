@@ -1,24 +1,16 @@
 package view.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Switch
-import android.widget.Toast
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.appweather.R
-import com.example.appweather.databinding.FragmentDetailsBinding
 import com.example.appweather.databinding.FragmentWeatherListBinding
-import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_details.*
 import repository.Weather
-import repository.createAndShow
 import repository.showSnackbar
-import view.MainActivity
 import view.weatherlist.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
