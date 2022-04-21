@@ -18,7 +18,15 @@ class Utils {
 
 }
 
-class MyException(_err:String = "",_infoErr:String = ""):Throwable(){
+class MyExceptionServer(_err:String = "",_infoErr:String = ""):Throwable(){
+    private var err:String = _err
+    private var _info:String = _infoErr
+    override fun toString(): String {
+        return _info.plus(" :").plus(err)
+    }
+}
+
+class MyExceptionClient(_err:String = "",_infoErr:String = ""):Throwable(){
     private var err:String = _err
     private var _info:String = _infoErr
     override fun toString(): String {

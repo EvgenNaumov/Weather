@@ -8,6 +8,7 @@ import android.net.NetworkInfo
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.appweather.BuildConfig
 import com.google.gson.Gson
 import repository.ErrorProcessing
@@ -22,13 +23,17 @@ import java.net.MalformedURLException
 import java.net.URL
 
 class DetailsService(val name: String = "") : IntentService(name) {
-
+    private val message = Intent(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER)
     override fun onHandleIntent(intent: Intent?) {
         intent?.let {
-            val lat = it.getDoubleExtra(KEY_BUNDLE_LAT,0.0)
-            val lon = it.getDoubleExtra(KEY_BUNDLE_LON,0.0)
+            val lat = it.getDoubleExtra(KEY_BUNDLE_LAT, 0.0)
+            val lon = it.getDoubleExtra(KEY_BUNDLE_LON, 0.0)
             Log.d(TAG, "onDetailsService: $lat $lon")
 
+            if (lat == 0.0 && lon == 0.0) {
+                onEmptyData()
+                return
+            }
 
             val onErrorProcessing: ErrorProcessing = ErrorProcessingImp()
             try {
@@ -37,84 +42,84 @@ class DetailsService(val name: String = "") : IntentService(name) {
 
 //                Thread {
 //                lateinit var urlConnection: HttpsURLConnection
-                    lateinit var urlConnection: HttpURLConnection
-                    try {
+                lateinit var urlConnection: HttpURLConnection
+                try {
 
 
-                        urlConnection =
-                            (uri.openConnection() as HttpURLConnection).apply {
-                                connectTimeout = 1000
-                                readTimeout = 1000
-                                requestMethod = "GET"
-                                addRequestProperty(
-                                    WEATHER_API_KEY,
-                                    BuildConfig.WEATHER_API_KEY
-                                )
-                            }
-
-                        //HW 5
-                        val headers = urlConnection.headerFields
-                        val responseCode = urlConnection.responseCode
-                        val responseMessage = urlConnection.responseMessage
-
-                        var isError: Boolean = false
-                        var errString: String = ""
-                        try {
-                            onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
-                        } catch (e: IOException) {
-                            Log.d(TAG, e.printStackTrace().toString())
-                            errString = e.message.toString()
-                            isError = true
-                        } finally {
-                            if (isError) {
-                                throw MyException(errString)
-                            }
-
+                    urlConnection =
+                        (uri.openConnection() as HttpURLConnection).apply {
+                            connectTimeout = 1000
+                            readTimeout = 1000
+                            requestMethod = "GET"
+                            addRequestProperty(
+                                WEATHER_API_KEY,
+                                BuildConfig.WEATHER_API_KEY
+                            )
                         }
-                        //HW 5
 
-                        val result = BufferedReader(InputStreamReader(urlConnection.inputStream))
+                    //HW 5
+                    val headers = urlConnection.headerFields
+                    val responseCode = urlConnection.responseCode
+                    val responseMessage = urlConnection.responseMessage
 
-                        val weatherDTO: WeatherDTO = Gson().fromJson(result, WeatherDTO::class.java)
-
-
-                        //object : <> это анонимные объекты object: Runnable{}
+                    var isError: Boolean = false
+                    var errString: String = ""
+                    onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
 /*
-                        Handler(Looper.getMainLooper()).post {
-                            onServerResponseListener.onResponse(weatherDTO)
-                        }
-*/
-
-                        val message = Intent(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER)
-                        message.putExtra(KEY_BUNDLE_SERVICE_WEATHER, weatherDTO)
-                        sendBroadcast(message)
-
-
+                    try {
+                        onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
                     } catch (e: IOException) {
-                        Log.d("@@@@", "DetailService: Fail connection")
-//                        Handler(Looper.getMainLooper()).post {
-//                            onServerResponseListener.onFailed("loadWeather: ${e.message.toString()}")
-//                        }
-                    } catch (e:MyException){
-                        Log.d("@@@@", "MyException: $e")
-//                        Handler(Looper.getMainLooper()).post {
-//                            onServerResponseListener.onError("loadWeather: ${e.message.toString()}")
-//                        }
+                        Log.d(TAG, e.printStackTrace().toString())
+                        errString = e.message.toString()
+                        isError = true
                     } finally {
-                        urlConnection.disconnect()
+                        if (isError) {
+                            throw MyException(errString)
+                        }
+
                     }
+*/
+                    //HW 5
 
-//                }.start()
+                    val result = BufferedReader(InputStreamReader(urlConnection.inputStream))
 
+                    val weatherDTO: WeatherDTO = Gson().fromJson(result, WeatherDTO::class.java)
+
+                    message.putExtra(KEY_BUNDLE_SERVICE_WEATHER, weatherDTO)
+                    sendBroadcast(message)
+
+
+                } catch (e: IOException) {
+                    Log.d("@@@@", "DetailService: Fail connection")
+                } catch (e: MyExceptionServer) {
+                    Log.d("@@@@", "MyException: $e")
+                    onErrorWebAPI(DETAILS_DATA_ERROR_SERVER)
+                } catch (e: MyExceptionClient) {
+                    Log.d("@@@@", "MyException: $e")
+                    onErrorWebAPI(DETAILS_DATA_ERROR_CLIENT)
+                } finally {
+                    urlConnection.disconnect()
+                }
 
             } catch (e: MalformedURLException) {
                 Log.d("@@@", "DetailService: fail URI")
-//                Handler(Looper.getMainLooper()).post {
-//                    onServerResponseListener.onFailed("loadWeather: Fail URI")
-//                }
 
             }
 
         }
+    }
+
+    private fun onErrorWebAPI(inf:String){
+        putLoadResult(inf)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(message)
+
+    }
+
+    private fun onEmptyData() {
+        putLoadResult(DETAILS_DATA_EMPTY_EXTRA)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(message)
+    }
+
+    private fun putLoadResult(detailsDataEmptyExtra: String) {
     }
 }

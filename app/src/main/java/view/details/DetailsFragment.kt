@@ -16,6 +16,11 @@ import com.example.appweather.databinding.FragmentDetailsBinding
 import kotlinx.android.synthetic.main.fragment_details.view.*
 import repository.*
 
+const val DETAILS_DATA_EMPTY_EXTRA = "DATA_EMPTY"
+const val DETAILS_DATA_ERROR_SERVER = "ERROR SERVER"
+const val DETAILS_DATA_ERROR_CLIENT = "ERROR CLIENT"
+const val DETAILS_URL_MALFORMED_EXTRA = "URL MALFORMED"
+
 class DetailsFragment : Fragment(), OnServerResponse {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
