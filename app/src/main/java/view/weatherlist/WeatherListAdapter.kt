@@ -1,4 +1,4 @@
-package view.main
+package view.weatherlist
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.appweather.databinding.FragmentWeatherListRecyclerItemBinding
 import repository.Weather
-import view.weatherlist.onItemListClickListener
+import view.main.onItemListClickListener
 
 class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolder>() {
     private var dataWeather: List<Weather> = listOf()
@@ -31,7 +31,7 @@ class WeatherListAdapter : RecyclerView.Adapter<WeatherListAdapter.MainViewHolde
         return MainViewHolder(binding.root)
     }
 
-    override fun onBindViewHolder(holder: WeatherListAdapter.MainViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         holder.bind(dataWeather.get(position))
     }
 

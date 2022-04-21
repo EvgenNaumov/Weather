@@ -1,7 +1,10 @@
 package repository
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class FactDTO(
     @SerializedName("condition")
     val condition: String,
@@ -18,7 +21,7 @@ data class FactDTO(
     @SerializedName("polar")
     val polar: Boolean,
     @SerializedName("pressure_mm")
-    val pressure_mm: Int,
+    val pressure_mm: Double,
     @SerializedName("pressure_pa")
     val pressure_pa: Int,
     @SerializedName("season")
@@ -31,4 +34,4 @@ data class FactDTO(
     val wind_gust: Double,
     @SerializedName("wind_speed")
     val wind_speed: Double
-)
+): Parcelable

@@ -1,4 +1,4 @@
-package view.weatherlist
+package view.main
 
 import repository.Weather
 
