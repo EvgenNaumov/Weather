@@ -1,6 +1,8 @@
 package repository
 
-import Utils.MyException
+
+import Utils.MyExceptionClient
+import Utils.MyExceptionServer
 import android.util.Log
 import java.io.IOException
 
@@ -25,12 +27,12 @@ class ErrorProcessingImp() : ErrorProcessing {
             in clientside -> {
                 Log.d("@@@_info", "Ошибка клиента: $textErr")
 //                throw MyException(textErr,"CLIENT")
-                throw IOException("Ошибка клиента: $textErr")
+                throw MyExceptionClient("Ошибка клиента:", textErr)
             }
             in serverside -> {
                 Log.d("@@@_info", "Ошибка сервера: $textErr")
 //                throw MyException(textErr,"SERVER")
-                throw IOException("Ошибка сервера: $textErr")
+                throw MyExceptionServer("Ошибка сервера:", textErr)
             }
             in response -> {
                 Log.d("@@@_info", "loadWeather: $textErr")

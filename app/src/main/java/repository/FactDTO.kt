@@ -21,7 +21,7 @@ data class FactDTO(
     @SerializedName("polar")
     val polar: Boolean,
     @SerializedName("pressure_mm")
-    val pressure_mm: Int,
+    val pressure_mm: Double,
     @SerializedName("pressure_pa")
     val pressure_pa: Int,
     @SerializedName("season")

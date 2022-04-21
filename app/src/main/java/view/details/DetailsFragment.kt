@@ -4,6 +4,7 @@ import Utils.*
 import android.content.BroadcastReceiver
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +16,12 @@ import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
 import kotlinx.android.synthetic.main.fragment_details.view.*
 import repository.*
+
+const val DETAILS_DATA_EMPTY_EXTRA = "DATA_EMPTY"
+const val DETAILS_DATA_ERROR_SERVER = "ERROR SERVER"
+const val DETAILS_DATA_ERROR_CLIENT = "ERROR CLIENT"
+const val DETAILS_URL_MALFORMED_EXTRA = "URL MALFORMED"
+const val DETAILS_URL_CONNECTION_EXTRA = "CONNECTION"
 
 class DetailsFragment : Fragment(), OnServerResponse {
     private var _binding: FragmentDetailsBinding? = null
@@ -31,93 +38,130 @@ class DetailsFragment : Fragment(), OnServerResponse {
         return binding.root
     }
 
-    lateinit var currentCityName: String
+    private lateinit var currentCityName: String
 
-    val receiver = object : BroadcastReceiver() {
-        override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+    private val receiver = object : BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: Intent?) {
             Log.d(TAG, "onReceive: ")
-            intent?.let { intent ->
-                intent.getParcelableExtra<WeatherDTO>(KEY_BUNDLE_SERVICE_WEATHER)
-                    ?.let { onResponse(it) }
+            intent?.let {
+                getWeather(intent)
             }
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+private fun getWeather(intent: Intent) {
 
-        mainView = binding.mainView
-        mainView.visibility = View.GONE
-        binding.loadingLayout.visibility = View.VISIBLE
+    if (intent.getBooleanExtra(DETAILS_ERROR, true)) {
 
-        context?.registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
+        intent.getStringExtra(KEY_BUNDLE_SERVICE_WEATHER).let {
+            when (it) {
+                DETAILS_DATA_EMPTY_EXTRA -> {
+                    onFailed("Data is empty")
+                }
+                DETAILS_DATA_ERROR_SERVER -> {
+                    onError("Error on server")
+                }
+                DETAILS_DATA_ERROR_CLIENT -> {
+                    onError("Error on client")
+                }
+                DETAILS_URL_MALFORMED_EXTRA -> {
+                    onFailed("URL is error")
+                }
+                DETAILS_URL_CONNECTION_EXTRA -> {
+                    onFailed("Connection is error")
+                }
+            }
 
+        }
+
+    } else {
+
+        val weatherDTO: WeatherDTO = intent.getParcelableExtra<WeatherDTO>(KEY_BUNDLE_SERVICE_WEATHER)!!
+        onResponse(weatherDTO)
+    }
+
+}
+
+
+
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
+
+    mainView = binding.mainView
+    mainView.visibility = View.GONE
+    binding.loadingLayout.visibility = View.VISIBLE
+
+    context?.registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
+    context?.registerReceiver(receiver, IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION))//"android.intent.action.CONNECTIVITY_ACTION"
 //        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver,
 //            IntentFilter(KEY_BUNDLE_SERVICE_WEATHER)
 //        )
 
-        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
-            currentCityName = it.city.name
+    arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+        currentCityName = it.city.name
 //            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
-            requireActivity().startService(Intent(requireContext(), DetailsService::class.java).apply {
-                putExtra(KEY_BUNDLE_LAT,it.city.lat)
-                putExtra(KEY_BUNDLE_LON,it.city.lon)
+        requireActivity().startService(
+            Intent(
+                requireContext(),
+                DetailsService::class.java
+            ).apply {
+                putExtra(KEY_BUNDLE_LAT, it.city.lat)
+                putExtra(KEY_BUNDLE_LON, it.city.lon)
             })
-        }
     }
+}
 
-    private fun renderData(weather: WeatherDTO) {
-        with(binding) {
-            this.mainView.visibility = View.VISIBLE
-            this.loadingLayout.visibility = View.GONE
+private fun renderData(weather: WeatherDTO) {
+    with(binding) {
+        this.mainView.visibility = View.VISIBLE
+        this.loadingLayout.visibility = View.GONE
 
-            cityName.text = currentCityName
-            temperatureValue.text = weather.fact.temperature.toString()
-            feelsLikeValue.text = weather.fact.feels_like.toString()
-            cityCoordinates.text = getString(
-                R.string.city_coordinates,
-                weather.infoDTO.lat.toString(),
-                weather.infoDTO.lon.toString()
-            )
+        cityName.text = currentCityName
+        temperatureValue.text = weather.fact.temperature.toString()
+        feelsLikeValue.text = weather.fact.feels_like.toString()
+        cityCoordinates.text = getString(
+            R.string.city_coordinates,
+            weather.infoDTO.lat.toString(),
+            weather.infoDTO.lon.toString()
+        )
 //                    "lat: ${city.lat}  lon: ${city.lon}"
-        }
-        mainView.createAndShow("", "Успешно", { mainView })
-        // "Получилось".showSnackbar(binding.mainView)
     }
+    mainView.createAndShow("", "Успешно", { mainView })
+}
 
-    override fun onFailed(infoError: String) {
-        mainView.mainView.visibility = View.GONE
-        binding.loadingLayout.visibility = View.GONE
-        mainView.createAndShow("", infoError, { mainView })
+override fun onFailed(infoError: String) {
+    mainView.mainView.visibility = View.GONE
+    binding.loadingLayout.visibility = View.GONE
+    mainView.createAndShow("", infoError, { mainView })
+}
+
+override fun onError(infoErr: String) {
+    mainView.mainView.visibility = View.GONE
+    binding.loadingLayout.visibility = View.GONE
+    mainView.createAndShow("", infoErr, { mainView })
+}
+
+override fun onResponse(weatherDTO: WeatherDTO) {
+    renderData(weatherDTO)
+}
+
+
+companion object {
+    const val BUNDLE_WEATHER: String = "BUNDLE_WEATHER"
+
+    @JvmStatic
+    fun newInstance(bundle: Bundle): DetailsFragment {
+        val detailsFragment = DetailsFragment()
+        detailsFragment.arguments = bundle
+        return detailsFragment
     }
+}
 
-    override fun onError(infoErrAPI: String) {
-        mainView.mainView.visibility = View.GONE
-        binding.loadingLayout.visibility = View.GONE
-        mainView.createAndShow("", infoErrAPI, { mainView })
-    }
-
-    override fun onResponse(weatherDTO: WeatherDTO) {
-        renderData(weatherDTO)
-    }
-
-
-    companion object {
-        const val BUNDLE_WEATHER: String = "BUNDLE_WEATHER"
-
-        @JvmStatic
-        fun newInstance(bundle: Bundle): DetailsFragment {
-            val detailsFragment = DetailsFragment()
-            detailsFragment.arguments = bundle
-            return detailsFragment
-        }
-    }
-
-    override fun onDestroy() {
-        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(receiver)
-        super.onDestroy()
-//        _binding = null
-    }
+override fun onDestroy() {
+    super.onDestroy()
+    _binding = null
+    LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(receiver)
+}
 
 }
 

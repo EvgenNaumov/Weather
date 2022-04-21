@@ -13,12 +13,21 @@ const val KEY_BUNDLE_SERVICE_BROADCAST_WEATHER  = "weather_s_b"
 const val KEY_BUNDLE_SERVICE_WEATHER = "key2"
 const val KEY_BUNDLE_ACTIVITY_MESSAGE = "key3"
 const val TAG                        = "@@@"
+const val DETAILS_ERROR              = "key4"
 
 class Utils {
 
 }
 
-class MyException(_err:String = "",_infoErr:String = ""):Throwable(){
+class MyExceptionServer(_err:String = "",_infoErr:String = ""):Throwable(){
+    private var err:String = _err
+    private var _info:String = _infoErr
+    override fun toString(): String {
+        return _info.plus(" :").plus(err)
+    }
+}
+
+class MyExceptionClient(_err:String = "",_infoErr:String = ""):Throwable(){
     private var err:String = _err
     private var _info:String = _infoErr
     override fun toString(): String {
