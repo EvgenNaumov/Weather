@@ -11,6 +11,7 @@ import com.example.appweather.R
 import com.example.appweather.databinding.FragmentWeatherListBinding
 import repository.Weather
 import repository.showSnackbar
+import view.details.DetailsFragment
 import view.weatherlist.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
