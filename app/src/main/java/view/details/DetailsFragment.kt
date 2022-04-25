@@ -14,10 +14,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.example.appweather.BuildConfig
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.fragment_details.view.*
+import okhttp3.*
 import repository.*
+import java.io.IOException
 
 const val DETAILS_DATA_EMPTY_EXTRA = "DATA_EMPTY"
 const val DETAILS_DATA_ERROR_SERVER = "ERROR SERVER"
@@ -74,23 +78,67 @@ class DetailsFragment : Fragment(), OnServerResponse {
         binding.loadingLayout.visibility = View.GONE
         mainView.showSnackbar("Connection found")
 
-        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
-            currentCityName = it.city.name
-//            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
-            requireActivity().startService(
-                Intent(
-                    requireContext(),
-                    DetailsService::class.java
-                ).apply {
-                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
-                    putExtra(KEY_BUNDLE_LON, it.city.lon)
-                })
-        }
+//        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+//            currentCityName = it.city.name
+////            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+//            requireActivity().startService(
+//                Intent(
+//                    requireContext(),
+//                    DetailsService::class.java
+//                ).apply {
+//                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
+//                    putExtra(KEY_BUNDLE_LON, it.city.lon)
+//                })
+//        }
     }
     //HW6
 
-    private fun getWeather(intent: Intent) {
+    //HW7
+    private fun getWeatherRetrofit(lat: Double, lon: Double) {
 
+        binding.loadingLayout.visibility = View.VISIBLE
+        val client = OkHttpClient()
+        val builder = Request.Builder()
+
+        builder.addHeader(WEATHER_API_KEY, BuildConfig.WEATHER_API_KEY)
+        builder.url(URL_YANDEX_API.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
+
+        //HW7 ассихронный вариант
+        val request = builder.build()
+        val callBack: Callback = object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val weatherDTO: WeatherDTO =
+                        Gson().fromJson(response.body()!!.string(), WeatherDTO::class.java)
+                    requireActivity().runOnUiThread { onResponse(weatherDTO) }
+
+                } else {
+
+                }
+
+            }
+
+        }
+
+        val call: Call = client.newCall(request)
+        call.enqueue(callBack)
+//HW7 ассихронный вариант
+
+        Thread{
+            //последовательное выполнение сихронный вариант
+            //work 1
+            val response = call.execute()
+            //далее работаем с response
+        }.start()
+    }
+    //HW7
+
+    private fun getWeather(intent: Intent) {
+        binding.loadingLayout.visibility = View.VISIBLE
         if (intent.getBooleanExtra(DETAILS_ERROR, true)) {
 
             intent.getStringExtra(KEY_BUNDLE_SERVICE_WEATHER).let {
@@ -132,18 +180,21 @@ class DetailsFragment : Fragment(), OnServerResponse {
         binding.loadingLayout.visibility = View.VISIBLE
 
         context?.registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
-        context?.registerReceiver(
-            networkStateReciever,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        )
-//        "android.net.conn.CONNECTIVITY_CHANGE"
-//        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver,
-//            IntentFilter(KEY_BUNDLE_SERVICE_WEATHER)
+//        context?.registerReceiver(
+//            networkStateReciever,
+//            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 //        )
 
-//        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
-//            currentCityName = it.city.name
-////            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+
+        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+            currentCityName = it.city.name
+//            HW5
+//            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+//            HW5
+
+//            HW7
+            getWeatherRetrofit(it.city.lat, it.city.lon)
+//            HW7
 //            requireActivity().startService(
 //                Intent(
 //                    requireContext(),
@@ -152,7 +203,7 @@ class DetailsFragment : Fragment(), OnServerResponse {
 //                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
 //                    putExtra(KEY_BUNDLE_LON, it.city.lon)
 //                })
-//        }
+        }
     }
 
     private fun renderData(weather: WeatherDTO) {
