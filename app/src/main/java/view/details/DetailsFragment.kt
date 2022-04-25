@@ -74,18 +74,18 @@ class DetailsFragment : Fragment(), OnServerResponse {
         binding.loadingLayout.visibility = View.GONE
         mainView.showSnackbar("Connection found")
 
-        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
-            currentCityName = it.city.name
-//            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
-            requireActivity().startService(
-                Intent(
-                    requireContext(),
-                    DetailsService::class.java
-                ).apply {
-                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
-                    putExtra(KEY_BUNDLE_LON, it.city.lon)
-                })
-        }
+//        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+//            currentCityName = it.city.name
+////            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+//            requireActivity().startService(
+//                Intent(
+//                    requireContext(),
+//                    DetailsService::class.java
+//                ).apply {
+//                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
+//                    putExtra(KEY_BUNDLE_LON, it.city.lon)
+//                })
+//        }
     }
     //HW6
 
@@ -132,27 +132,24 @@ class DetailsFragment : Fragment(), OnServerResponse {
         binding.loadingLayout.visibility = View.VISIBLE
 
         context?.registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
-        context?.registerReceiver(
-            networkStateReciever,
-            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-        )
-//        "android.net.conn.CONNECTIVITY_CHANGE"
-//        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver,
-//            IntentFilter(KEY_BUNDLE_SERVICE_WEATHER)
+//        context?.registerReceiver(
+//            networkStateReciever,
+//            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 //        )
 
-//        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
-//            currentCityName = it.city.name
-////            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
-//            requireActivity().startService(
-//                Intent(
-//                    requireContext(),
-//                    DetailsService::class.java
-//                ).apply {
-//                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
-//                    putExtra(KEY_BUNDLE_LON, it.city.lon)
-//                })
-//        }
+
+        arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
+            currentCityName = it.city.name
+//            WeatherLoader().loadWeather(it.city.lat, it.city.lon, this@DetailsFragment)
+            requireActivity().startService(
+                Intent(
+                    requireContext(),
+                    DetailsService::class.java
+                ).apply {
+                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
+                    putExtra(KEY_BUNDLE_LON, it.city.lon)
+                })
+        }
     }
 
     private fun renderData(weather: WeatherDTO) {
