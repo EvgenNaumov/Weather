@@ -62,21 +62,6 @@ class DetailsService(val name: String = "") : IntentService(name) {
                     val responseMessage = urlConnection.responseMessage
 
                     onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
-/*
-                    try {
-                        onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
-                    } catch (e: IOException) {
-                        Log.d(TAG, e.printStackTrace().toString())
-                        errString = e.message.toString()
-                        isError = true
-                    } finally {
-                        if (isError) {
-                            throw MyException(errString)
-                        }
-
-                    }
-*/
-                    //HW 5
 
                     val result = BufferedReader(InputStreamReader(urlConnection.inputStream))
                     val weatherDTO: WeatherDTO = Gson().fromJson(result, WeatherDTO::class.java)

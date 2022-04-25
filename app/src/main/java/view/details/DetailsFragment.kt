@@ -179,8 +179,8 @@ class DetailsFragment : Fragment(), OnServerResponse {
         mainView.visibility = View.GONE
         binding.loadingLayout.visibility = View.VISIBLE
 
-        context?.registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
-//        context?.registerReceiver(
+//        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(receiver, IntentFilter(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER))
+//        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
 //            networkStateReciever,
 //            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
 //        )
@@ -194,15 +194,6 @@ class DetailsFragment : Fragment(), OnServerResponse {
 
 //            HW7
             getWeatherRetrofit(it.city.lat, it.city.lon)
-//            HW7
-//            requireActivity().startService(
-//                Intent(
-//                    requireContext(),
-//                    DetailsService::class.java
-//                ).apply {
-//                    putExtra(KEY_BUNDLE_LAT, it.city.lat)
-//                    putExtra(KEY_BUNDLE_LON, it.city.lon)
-//                })
         }
     }
 
