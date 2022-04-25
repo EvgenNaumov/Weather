@@ -1,4 +1,4 @@
-package view.main
+package view.weatherlist
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,7 +11,8 @@ import com.example.appweather.R
 import com.example.appweather.databinding.FragmentWeatherListBinding
 import repository.Weather
 import repository.showSnackbar
-import view.weatherlist.onItemListClickListener
+import view.details.DetailsFragment
+import view.main.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
 

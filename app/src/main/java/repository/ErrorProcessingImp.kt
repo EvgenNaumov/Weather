@@ -1,18 +1,18 @@
 package repository
 
-import android.os.Handler
-import android.os.Looper
+
+import Utils.MyExceptionClient
+import Utils.MyExceptionServer
 import android.util.Log
-import view.main.DetailsFragment
 import java.io.IOException
 
-class ErrorProcessingImp(onServerResponseListener: OnServerResponse?) : ErrorProcessing {
+class ErrorProcessingImp() : ErrorProcessing {
 
     private val info: IntRange = 100..105
     private val response: IntRange = 200..226
     private val clientside: IntRange = 400..499
     private val serverside: IntRange = 500..510
-    private val onServerResponseListener = onServerResponseListener
+
     override fun onWebApiErrorProcessing(numErr: Int, textErr: String, showAllInfo: Boolean) {
 
 
@@ -26,11 +26,13 @@ class ErrorProcessingImp(onServerResponseListener: OnServerResponse?) : ErrorPro
             }
             in clientside -> {
                 Log.d("@@@_info", "Ошибка клиента: $textErr")
-                throw IOException(textErr)
+//                throw MyException(textErr,"CLIENT")
+                throw MyExceptionClient("Ошибка клиента:", textErr)
             }
             in serverside -> {
                 Log.d("@@@_info", "Ошибка сервера: $textErr")
-                throw IOException(textErr)
+//                throw MyException(textErr,"SERVER")
+                throw MyExceptionServer("Ошибка сервера:", textErr)
             }
             in response -> {
                 Log.d("@@@_info", "loadWeather: $textErr")

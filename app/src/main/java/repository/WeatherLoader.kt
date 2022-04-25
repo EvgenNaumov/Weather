@@ -1,6 +1,8 @@
 package repository
 
 
+import Utils.URL_YANDEX_API
+import Utils.WEATHER_API_KEY
 import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
@@ -20,10 +22,10 @@ class WeatherLoader {
 
 
     fun loadWeather(lat: Double, lon: Double, onServerResponseListener: OnServerResponse) {
-        val onErrorProcessing: ErrorProcessing = ErrorProcessingImp(onServerResponseListener)
+        val onErrorProcessing: ErrorProcessing = ErrorProcessingImp()
         try {//https://
-//            val uri: URL = URL("https://api.weather.yandex.ru/v2/informers?lat=$lat&lon=$lon")
-            val uri: URL = URL("http://212.86.114.27/v2/informers?lat=$lat&lon=$lon")
+//          val uri: URL = URL("https://api.weather.yandex.ru/v2/informers?lat=$lat&lon=$lon")
+            val uri: URL = URL(URL_YANDEX_API.plus("lat=$lat&lon=$lon"))
 
             Thread {
 //                lateinit var urlConnection: HttpsURLConnection
@@ -37,7 +39,7 @@ class WeatherLoader {
                             readTimeout = 1000
                             requestMethod = "GET"
                             addRequestProperty(
-                                "X-Yandex-API-Key",
+                                WEATHER_API_KEY,
                                 BuildConfig.WEATHER_API_KEY
                             )
                         }
