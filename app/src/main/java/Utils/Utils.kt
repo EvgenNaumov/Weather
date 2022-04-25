@@ -14,6 +14,7 @@ const val KEY_BUNDLE_SERVICE_WEATHER = "key2"
 const val KEY_BUNDLE_ACTIVITY_MESSAGE = "key3"
 const val TAG                        = "@@@"
 const val DETAILS_ERROR              = "key4"
+const val KEY_CONNECTION             = "key5"
 
 class Utils {
 

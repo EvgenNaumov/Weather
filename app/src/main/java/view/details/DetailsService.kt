@@ -21,12 +21,10 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
+import javax.net.ssl.HttpsURLConnection
 
 class DetailsService(val name: String = "") : IntentService(name) {
     private val message = Intent(KEY_BUNDLE_SERVICE_BROADCAST_WEATHER)
-    private val actionMessage = Intent("android.intent.action.CONNECTIVITY_ACTION")
-
-    private var isResponse:Boolean = true
 
     override fun onHandleIntent(intent: Intent?) {
         intent?.let {
@@ -45,10 +43,10 @@ class DetailsService(val name: String = "") : IntentService(name) {
             val uri: URL = URL(URL_YANDEX_API.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
 //                val uri: URL = URL(URL_YANDEX_API.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
 
-                lateinit var urlConnection: HttpURLConnection
+                lateinit var urlConnection: HttpsURLConnection
                 try {
                     urlConnection =
-                        (uri.openConnection() as HttpURLConnection).apply {
+                        (uri.openConnection() as HttpsURLConnection).apply {
                             connectTimeout = 1000
                             readTimeout = 1000
                             requestMethod = "GET"
@@ -63,8 +61,6 @@ class DetailsService(val name: String = "") : IntentService(name) {
                     val responseCode = urlConnection.responseCode
                     val responseMessage = urlConnection.responseMessage
 
-                    var isError: Boolean = false
-                    var errString: String = ""
                     onErrorProcessing.onWebApiErrorProcessing(responseCode, responseMessage)
 /*
                     try {
@@ -83,7 +79,6 @@ class DetailsService(val name: String = "") : IntentService(name) {
                     //HW 5
 
                     val result = BufferedReader(InputStreamReader(urlConnection.inputStream))
-
                     val weatherDTO: WeatherDTO = Gson().fromJson(result, WeatherDTO::class.java)
 
                     message.putExtra(KEY_BUNDLE_SERVICE_WEATHER, weatherDTO)
@@ -100,7 +95,8 @@ class DetailsService(val name: String = "") : IntentService(name) {
                 } catch (e: MyExceptionClient) {
                     Log.d("@@@@", "MyException: $e")
                     onErrorWebAPI(DETAILS_DATA_ERROR_CLIENT)
-                } finally {
+                }
+                finally {
                     urlConnection.disconnect()
                 }
 

@@ -1,9 +1,9 @@
-package view
+package view.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.appweather.R
-import view.main.WeatherListFragment
+import view.weatherlist.WeatherListFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
