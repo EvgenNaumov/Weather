@@ -1,9 +1,13 @@
 package repository
 
+import Utils.TAG
 import Utils.URL_YANDEX_DOMAIN
 import Utils.convertDtoToModel
+import android.util.Log
 import com.example.appweather.BuildConfig
 import com.google.gson.GsonBuilder
+import repository.DTO.WeatherDTO
+import repository.ErrorProcessing.ErrorProcessingImpl
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,13 +33,29 @@ class DetailsRepositoryRetrofit2Impl:DetailsRepository {
                         callbackMy.onResponse(weather)
                     }
 
+                } else {
+                  val codeError = response.code()
+                  val errorProcessingImpl = ErrorProcessingImpl()
+
+                  errorProcessingImpl.onWebApiErrorRetrofit(codeError,city.lat,city.lon, object : CallBackAPI{
+                      override fun onError(isErrorAPI: Boolean, t: String) {
+                          Log.d(TAG,"CallBackAPI")
+                          if (isErrorAPI && t!=null){
+                              callbackMy.onErrorAPI(t)
+                          }
+                      }
+                  })
                 }
             }
 
             override fun onFailure(call: Call<WeatherDTO>, t: Throwable) {
-                //TODO HW
+                callbackMy.onFail(t)
             }
 
         })
+    }
+
+    interface CallBackAPI{
+        fun onError(isErrorAPI:Boolean, t:String)
     }
 }

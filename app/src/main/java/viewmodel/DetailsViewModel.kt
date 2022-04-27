@@ -19,8 +19,12 @@ class DetailsViewModel(
                 liveData.postValue(DetailsState.Success(weather))
             }
 
-            override fun onFail() {
-                //  TODO HW   liveData.postValue(DetailsState.Error()) ("Not yet implemented")
+            override fun onFail(t:Throwable) {
+                liveData.postValue(DetailsState.Error(t.message.toString()))
+            }
+
+            override fun onErrorAPI(t: String) {
+                liveData.postValue(DetailsState.Error(t)) //("Not yet implemented")
             }
         })
 
@@ -31,6 +35,8 @@ class DetailsViewModel(
         fun onResponse(weather: Weather)
 
         // TODO HW Fail
-        fun onFail()
+        fun onFail(t: Throwable)
+
+        fun onErrorAPI(t:String)
     }
 }

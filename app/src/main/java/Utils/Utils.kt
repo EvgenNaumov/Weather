@@ -1,9 +1,9 @@
 package Utils
 
 import com.example.appweather.BuildConfig
-import repository.FactDTO
+import repository.DTO.FactDTO
 import repository.Weather
-import repository.WeatherDTO
+import repository.DTO.WeatherDTO
 import repository.getDefaultCity
 
 const val WEATHER_APY_KEY           = BuildConfig.WEATHER_API_KEY
@@ -30,18 +30,27 @@ fun convertDtoToModel(weatherDTO: WeatherDTO): Weather {
     return (Weather(getDefaultCity(), fact.temperature, fact.feels_like, fact.icon))
 }
 
-class MyExceptionServer(_err:String = "",_infoErr:String = ""):Throwable(){
-    private var err:String = _err
+class MyExceptionServer(errorString:String = "",_infoErr:String = ""):Throwable(){
+    private var err:String = errorString
     private var _info:String = _infoErr
     override fun toString(): String {
         return _info.plus(" :").plus(err)
     }
 }
 
-class MyExceptionClient(_err:String = "",_infoErr:String = ""):Throwable(){
-    private var err:String = _err
+class MyExceptionClient(errorString:String = "",_infoErr:String = ""):Throwable(){
+    private var err:String = errorString
     private var _info:String = _infoErr
     override fun toString(): String {
         return _info.plus(" :").plus(err)
     }
+}
+
+
+class MyExceptionEmptyData(errorString:String=""):Throwable(){
+
+}
+
+class MyExceptionWrongData(errorString:String):Throwable(){
+
 }

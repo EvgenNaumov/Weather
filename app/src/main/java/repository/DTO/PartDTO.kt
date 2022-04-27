@@ -1,4 +1,4 @@
-package repository
+package repository.DTO
 
 import com.google.gson.annotations.SerializedName
 

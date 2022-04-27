@@ -7,9 +7,9 @@ import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.appweather.BuildConfig
 import com.google.gson.Gson
-import repository.ErrorProcessing
-import repository.ErrorProcessingImp
-import repository.WeatherDTO
+import repository.ErrorProcessing.ErrorProcessing
+import repository.ErrorProcessing.ErrorProcessingImpl
+import repository.DTO.WeatherDTO
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -31,7 +31,7 @@ class DetailsService(val name: String = "") : IntentService(name) {
                 return
             }
 
-            val onErrorProcessing: ErrorProcessing = ErrorProcessingImp()
+            val onErrorProcessing: ErrorProcessing = ErrorProcessingImpl()
             try {
 
             val uri: URL = URL(URL_YANDEX_DOMAIN.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))

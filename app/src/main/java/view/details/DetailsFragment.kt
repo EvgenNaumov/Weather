@@ -12,10 +12,8 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.load
 import coil.request.ImageRequest
-import com.bumptech.glide.Glide
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
-import com.squareup.picasso.Picasso
 import repository.Weather
 import repository.createAndShow
 import viewmodel.DetailsState
@@ -62,7 +60,6 @@ class DetailsFragment : Fragment() {
 
         arguments?.getParcelable<Weather>(BUNDLE_WEATHER)?.let {
             viewModel.getWeather(it.city)
-//            getWeatherRetrofit(it.city.lat, it.city.lon)
         }
     }
 
@@ -103,13 +100,13 @@ class DetailsFragment : Fragment() {
             is DetailsState.Error -> {
                 mainView.visibility = View.GONE
                 binding.loadingLayout.visibility = View.GONE
-                mainView.createAndShow("", "Ошибка", { mainView })
+                mainView.createAndShow("", "Ошибка: ".plus(detailsState.error), { mainView })
             }
 
         }
     }
 
-    fun ImageView.loadSvg(url:String){
+   private fun ImageView.loadSvg(url:String){
         val imageLoader = ImageLoader.Builder(this.context)
             .componentRegistry { add(SvgDecoder(this@loadSvg.context)) }
             .build()
@@ -127,8 +124,6 @@ class DetailsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-//        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(receiver)
-//        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(networkStateReciever)
     }
 
     companion object {

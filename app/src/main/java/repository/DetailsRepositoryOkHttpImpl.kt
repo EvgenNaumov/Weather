@@ -9,6 +9,7 @@ import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import repository.DTO.WeatherDTO
 import viewmodel.DetailsViewModel
 
 class DetailsRepositoryOkHttpImpl : DetailsRepository {
