@@ -4,7 +4,6 @@ package repository
 import Utils.MyExceptionClient
 import Utils.MyExceptionServer
 import android.util.Log
-import java.io.IOException
 
 class ErrorProcessingImp() : ErrorProcessing {
 

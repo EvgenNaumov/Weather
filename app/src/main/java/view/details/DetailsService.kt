@@ -2,23 +2,17 @@ package view.details
 
 import Utils.*
 import android.app.IntentService
-import android.content.Context
 import android.content.Intent
-import android.net.NetworkInfo
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.example.appweather.BuildConfig
 import com.google.gson.Gson
 import repository.ErrorProcessing
 import repository.ErrorProcessingImp
-import repository.OnServerResponse
 import repository.WeatherDTO
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
-import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
@@ -40,7 +34,7 @@ class DetailsService(val name: String = "") : IntentService(name) {
             val onErrorProcessing: ErrorProcessing = ErrorProcessingImp()
             try {
 
-            val uri: URL = URL(URL_YANDEX_API.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
+            val uri: URL = URL(URL_YANDEX_DOMAIN.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
 //                val uri: URL = URL(URL_YANDEX_API.plus(YANDEX_ENDPOINT).plus("lat=$lat&lon=$lon"))
 
                 lateinit var urlConnection: HttpsURLConnection
@@ -51,7 +45,7 @@ class DetailsService(val name: String = "") : IntentService(name) {
                             readTimeout = 1000
                             requestMethod = "GET"
                             addRequestProperty(
-                                WEATHER_API_KEY,
+                                YANDEX_API_KEY,
                                 BuildConfig.WEATHER_API_KEY
                             )
                         }

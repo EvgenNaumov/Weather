@@ -1,8 +1,8 @@
 package repository
 
 
-import Utils.URL_YANDEX_API
-import Utils.WEATHER_API_KEY
+import Utils.URL_YANDEX_DOMAIN
+import Utils.YANDEX_API_KEY
 import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson
@@ -15,7 +15,6 @@ import com.example.appweather.BuildConfig
 import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.util.stream.Collectors
-import javax.net.ssl.HttpsURLConnection
 
 class WeatherLoader {
     private val onServerResponse: OnServerResponse? = null
@@ -25,7 +24,7 @@ class WeatherLoader {
         val onErrorProcessing: ErrorProcessing = ErrorProcessingImp()
         try {//https://
 //          val uri: URL = URL("https://api.weather.yandex.ru/v2/informers?lat=$lat&lon=$lon")
-            val uri: URL = URL(URL_YANDEX_API.plus("lat=$lat&lon=$lon"))
+            val uri: URL = URL(URL_YANDEX_DOMAIN.plus("lat=$lat&lon=$lon"))
 
             Thread {
 //                lateinit var urlConnection: HttpsURLConnection
@@ -39,7 +38,7 @@ class WeatherLoader {
                             readTimeout = 1000
                             requestMethod = "GET"
                             addRequestProperty(
-                                WEATHER_API_KEY,
+                                YANDEX_API_KEY,
                                 BuildConfig.WEATHER_API_KEY
                             )
                         }

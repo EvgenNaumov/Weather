@@ -1,10 +1,15 @@
 package Utils
 
-import java.lang.Exception
+import com.example.appweather.BuildConfig
+import repository.FactDTO
+import repository.Weather
+import repository.WeatherDTO
+import repository.getDefaultCity
 
-const val WEATHER_API_KEY            = "X-Yandex-API-Key"
-const val URL_YANDEX_API             ="https://api.weather.yandex.ru/"
-const val URL_YANDEX_API_TEST        = "http://212.86.114.27/"
+const val WEATHER_APY_KEY           = BuildConfig.WEATHER_API_KEY
+const val YANDEX_API_KEY            = "X-Yandex-API-Key"
+const val URL_YANDEX_DOMAIN             = "https://api.weather.yandex.ru/"
+const val URL_YANDEX_DOMAIN_TEST        = "http://212.86.114.27/"
 const val YANDEX_ENDPOINT            = "v2/informers?"
 const val KEY_BUNDLE_LAT             = "Lat1"
 const val KEY_BUNDLE_LON             = "Lon1"
@@ -18,6 +23,11 @@ const val KEY_CONNECTION             = "key5"
 
 class Utils {
 
+}
+
+fun convertDtoToModel(weatherDTO: WeatherDTO): Weather {
+    val fact: FactDTO = weatherDTO.fact
+    return (Weather(getDefaultCity(), fact.temperature, fact.feels_like, fact.icon))
 }
 
 class MyExceptionServer(_err:String = "",_infoErr:String = ""):Throwable(){
