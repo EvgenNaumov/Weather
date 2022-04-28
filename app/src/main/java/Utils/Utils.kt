@@ -21,6 +21,9 @@ const val TAG                        = "@@@"
 const val DETAILS_ERROR              = "key4"
 const val KEY_CONNECTION             = "key5"
 
+const val KEY_SP_FILE_NAME_1 = "fileName1"
+const val KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN = "is_russian"
+
 class Utils {
 
 }
@@ -47,10 +50,4 @@ class MyExceptionClient(errorString:String = "",_infoErr:String = ""):Throwable(
 }
 
 
-class MyExceptionEmptyData(errorString:String=""):Throwable(){
 
-}
-
-class MyExceptionWrongData(errorString:String):Throwable(){
-
-}
