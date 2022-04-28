@@ -21,14 +21,6 @@ class MainViewModel(
         Thread {
 
             liveData.postValue(AppState.Loading)
-/*
-            if ((1..10).random() > 6) {
-                val answer =
-                    if (isRussian) repository.getWeatherFromLocalStorageRus() else repository.getWeatherFromLocalStorageWord()
-                liveData.postValue(AppState.Success(answer))
-            } else
-                liveData.postValue(AppState.Error(IllegalAccessException("ошибка получения данных")))
-*/
             if (true) {
                 val answer =
                     if (isRussian) repository.getWeatherFromLocalStorageRus() else repository.getWeatherFromLocalStorageWord()
