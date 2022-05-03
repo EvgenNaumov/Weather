@@ -6,37 +6,53 @@ import repository.*
 
 class DetailsViewModel(
     private val liveData: MutableLiveData<DetailsState> = MutableLiveData(),
-    private val repository: DetailsRepository = DetailsRepositoryOkHttpImpl()): ViewModel() {
+    private val repositoryAdd: DetailsRepositoryAdd = DetailsRepositoryRoomImpl()
+) : ViewModel() {
 
-    private var repositoryretrofit: DetailsRepository = DetailsRepositoryRetrofit2Impl()
+//    private var repositoryretrofit: DetailsRepositoryOne = DetailsRepositoryRetrofit2Impl()
 
     fun getLiveData() = liveData
 
     fun getWeather(city: City) {
         liveData.postValue(DetailsState.Loading)
-        repositoryretrofit.getWeatherDetails(city, object : Callback {
+        val repositoryOne = if (isInternet()) {
+            DetailsRepositoryRetrofit2Impl()
+        } else {
+            DetailsRepositoryRoomImpl()
+        }
+
+        repositoryOne.getWeatherDetails(city, object : Callback {
             override fun onResponse(weather: Weather) {
                 liveData.postValue(DetailsState.Success(weather))
+                if (isInternet()) {
+                    repositoryAdd.addWeather(weather)
+                }
             }
 
-            override fun onFail(t:Throwable) {
-                liveData.postValue(DetailsState.Error(t.message.toString()))
+            override fun onFail() {
+                //  TODO HW   liveData.postValue(DetailsState.Error()) ("Not yet implemented")
             }
 
             override fun onErrorAPI(t: String) {
                 liveData.postValue(DetailsState.Error(t)) //("Not yet implemented")
             }
         })
-
-
     }
 
-    interface Callback{
+    fun isInternet(): Boolean {
+        return true
+    }
+
+
+    interface Callback {
         fun onResponse(weather: Weather)
 
         // TODO HW Fail
-        fun onFail(t: Throwable)
+        fun onFail()
 
-        fun onErrorAPI(t:String)
+        fun onErrorAPI(t: String)
     }
 }
+
+
+

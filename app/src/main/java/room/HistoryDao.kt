@@ -4,8 +4,10 @@ import androidx.room.*
 
 @Dao
 interface HistoryDao {
-    @Query("INSERT INTO history_table (city,temperature,feelsLike,icon) VALUES(:city,:temperature,:fellsLike,:icon)")
-    fun nativeInsert()
+    annotation class Dao
+
+    @Query("INSERT INTO history_table (city,temperature,feelsLike,icon) VALUES(:city,:temperature,:feelsLike,:icon)")
+    fun nativeInsert(city: String, temperature: Int, feelsLike: Int, icon: String)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(entity: HistoryEntity)

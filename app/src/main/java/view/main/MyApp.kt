@@ -1,11 +1,13 @@
 package view.main
 
+import android.app.Activity
 import android.app.Application
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import room.HistoryDao
 import room.MyDB
+import java.net.ContentHandler
 
 class MyApp : Application() {
     override fun onCreate() {
@@ -19,12 +21,11 @@ class MyApp : Application() {
         fun getHistoryDao(): HistoryDao {
             if (db == null) {
                 if (appContext != null) {
-                    db = Room.databaseBuilder(appContext!!, MyDB::class.java, "test")
-                        .allowMainThreadQueries() // TODO HW а вам нужно придумать что-то другое
-                        .addMigrations(migration_1_2)
-                        .addMigrations(migration_1_2)
-                        .addMigrations(migration_1_2)
-                        .build()
+                        db = Room.databaseBuilder(appContext!!, MyDB::class.java, "test")
+                            .allowMainThreadQueries() // TODO HW а вам нужно придумать что-то другое
+//                            //TODO HW сделать запрос не в главном потоке
+
+                            .build()
                 } else {
                     throw IllegalStateException("что-то пошло не так, и у нас пустое appContext")
                 }

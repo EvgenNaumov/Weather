@@ -15,7 +15,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import viewmodel.DetailsViewModel
 
-class DetailsRepositoryRetrofit2Impl:DetailsRepository {
+class DetailsRepositoryRetrofit2Impl:DetailsRepositoryOne {
     override fun getWeatherDetails(city: City, callbackMy: DetailsViewModel.Callback) {
         val weatherAPI = Retrofit.Builder().apply {
             baseUrl(URL_YANDEX_DOMAIN)
@@ -49,7 +49,7 @@ class DetailsRepositoryRetrofit2Impl:DetailsRepository {
             }
 
             override fun onFailure(call: Call<WeatherDTO>, t: Throwable) {
-                callbackMy.onFail(t)
+                callbackMy.onFail()
             }
 
         })

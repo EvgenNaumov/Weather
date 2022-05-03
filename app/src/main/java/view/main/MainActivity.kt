@@ -5,7 +5,10 @@ import Utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.example.appweather.R
+import view.historylist.HistoryWeatherListFragment
 import view.weatherlist.WeatherListFragment
 
 class MainActivity : AppCompatActivity() {
@@ -30,5 +33,22 @@ class MainActivity : AppCompatActivity() {
 
 
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu,menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.action_history->{
+                supportFragmentManager.beginTransaction().let {
+                    it.add(R.id.container, HistoryWeatherListFragment.newInstance()).addToBackStack("")
+                    it.commit()
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
