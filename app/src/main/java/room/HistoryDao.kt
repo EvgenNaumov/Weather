@@ -4,6 +4,8 @@ import androidx.room.*
 
 @Dao
 interface HistoryDao {
+    annotation class Dao
+
     @Query("INSERT INTO history_table (city,temperature,feelsLike,icon) VALUES(:city,:temperature,:fellsLike,:icon)")
     fun nativeInsert()
 

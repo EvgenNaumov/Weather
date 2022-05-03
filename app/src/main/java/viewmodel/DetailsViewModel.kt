@@ -6,9 +6,9 @@ import repository.*
 
 class DetailsViewModel(
     private val liveData: MutableLiveData<DetailsState> = MutableLiveData(),
-    private val repository: DetailsRepository = DetailsRepositoryOkHttpImpl()): ViewModel() {
+    private val repository: DetailsRepositoryOne = DetailsRepositoryOkHttpImpl()): ViewModel() {
 
-    private var repositoryretrofit: DetailsRepository = DetailsRepositoryRetrofit2Impl()
+    private var repositoryretrofit: DetailsRepositoryOne = DetailsRepositoryRetrofit2Impl()
 
     fun getLiveData() = liveData
 
@@ -19,8 +19,8 @@ class DetailsViewModel(
                 liveData.postValue(DetailsState.Success(weather))
             }
 
-            override fun onFail(t:Throwable) {
-                liveData.postValue(DetailsState.Error(t.message.toString()))
+            override fun onFail() {
+                liveData.postValue(DetailsState.Error("ошибка"))
             }
 
             override fun onErrorAPI(t: String) {
@@ -35,7 +35,7 @@ class DetailsViewModel(
         fun onResponse(weather: Weather)
 
         // TODO HW Fail
-        fun onFail(t: Throwable)
+        fun onFail()
 
         fun onErrorAPI(t:String)
     }

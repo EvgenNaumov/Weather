@@ -12,7 +12,7 @@ import okhttp3.Request
 import repository.DTO.WeatherDTO
 import viewmodel.DetailsViewModel
 
-class DetailsRepositoryOkHttpImpl : DetailsRepository {
+class DetailsRepositoryOkHttpImpl : DetailsRepositoryOne {
 
     override fun getWeatherDetails(city: City, callback: DetailsViewModel.Callback) {
 
