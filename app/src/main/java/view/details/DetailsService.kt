@@ -1,6 +1,6 @@
 package view.details
 
-import Utils.*
+import utils.*
 import android.app.IntentService
 import android.content.Intent
 import android.util.Log

@@ -21,11 +21,12 @@ class MyApp : Application() {
         fun getHistoryDao(): HistoryDao {
             if (db == null) {
                 if (appContext != null) {
-                        db = Room.databaseBuilder(appContext!!, MyDB::class.java, "test")
-                            .allowMainThreadQueries() // TODO HW а вам нужно придумать что-то другое
-//                            //TODO HW сделать запрос не в главном потоке
 
-                            .build()
+                    db = Room.databaseBuilder(appContext!!, MyDB::class.java, "test")
+                        //    .allowMainThreadQueries() // TODO HW а вам нужно придумать что-то другое
+                        //TODO HW сделать запрос не в главном потоке
+                        //в DetailsRepositoryRoomImpl вывозы MyApp.getHistoryDao вынес во внешнии потоки
+                        .build()
                 } else {
                     throw IllegalStateException("что-то пошло не так, и у нас пустое appContext")
                 }
@@ -40,5 +41,6 @@ class MyApp : Application() {
 
         }
     }
+
 
 }

@@ -53,7 +53,7 @@ class HistoryWeatherListFragment : Fragment() {
         when (data) {
             is AppState.Error -> {
                 //binding.loadingLayout.visibility = View.GONE
-                Snackbar.make(binding.root, "Не получилось ${data.error}", Snackbar.LENGTH_LONG)
+                Snackbar.make(binding.root, "Не получилось ${data.error.message}", Snackbar.LENGTH_LONG)
                     .show()
             }
             is AppState.Loading -> {

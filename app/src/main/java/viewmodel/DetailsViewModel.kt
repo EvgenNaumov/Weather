@@ -1,5 +1,10 @@
 package viewmodel
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import repository.*
@@ -9,8 +14,7 @@ class DetailsViewModel(
     private val repositoryAdd: DetailsRepositoryAdd = DetailsRepositoryRoomImpl()
 ) : ViewModel() {
 
-//    private var repositoryretrofit: DetailsRepositoryOne = DetailsRepositoryRetrofit2Impl()
-
+    private var noConnect:Boolean = true
     fun getLiveData() = liveData
 
     fun getWeather(city: City) {
@@ -29,8 +33,8 @@ class DetailsViewModel(
                 }
             }
 
-            override fun onFail() {
-                //  TODO HW   liveData.postValue(DetailsState.Error()) ("Not yet implemented")
+            override fun onFail(t:String) {
+                liveData.postValue(DetailsState.Error(t))
             }
 
             override fun onErrorAPI(t: String) {
@@ -39,19 +43,19 @@ class DetailsViewModel(
         })
     }
 
-    fun isInternet(): Boolean {
-        return true
+    private fun isInternet(): Boolean {
+        return noConnect
     }
-
 
     interface Callback {
         fun onResponse(weather: Weather)
 
         // TODO HW Fail
-        fun onFail()
+        fun onFail(t:String)
 
         fun onErrorAPI(t: String)
     }
+
 }
 
 

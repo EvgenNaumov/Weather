@@ -1,8 +1,10 @@
 package view.main
 
-import Utils.KEY_SP_FILE_NAME_1
-import Utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
+import utils.KEY_SP_FILE_NAME_1
+import utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
 import android.content.Context
+import android.content.IntentFilter
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -30,8 +32,6 @@ class MainActivity : AppCompatActivity() {
 
         val defaultValueIsRussian = true
         sp.getBoolean(KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN,defaultValueIsRussian)
-
-
 
     }
 

@@ -13,6 +13,8 @@ data class HistoryEntity (
     val temperature: Int,
     val feelsLike: Int,
     val icon: String,
-    val condition: String = "cloudy"
+    val condition: String = "cloudy",
+    val lat:Double,
+    val lon:Double
 
 )

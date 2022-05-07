@@ -1,9 +1,9 @@
 package repository
 
-import Utils.URL_YANDEX_DOMAIN
-import Utils.YANDEX_API_KEY
-import Utils.YANDEX_ENDPOINT
-import Utils.convertDtoToModel
+import utils.URL_YANDEX_DOMAIN
+import utils.YANDEX_API_KEY
+import utils.YANDEX_ENDPOINT
+import utils.convertDtoToModel
 import com.example.appweather.BuildConfig
 import com.google.gson.Gson
 import okhttp3.Call

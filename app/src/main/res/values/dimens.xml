@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="fragmentDetails_headericon_marginTop">2dp</dimen>
+    <dimen name="cityname_textsize">35sp</dimen>
+    <dimen name="citycoordinates_margintop">5dp</dimen>
+    <dimen name="imageview_height">100dp</dimen>
+    <dimen name="imageview_margintop">8dp</dimen>
+    <dimen name="width_tvicon_itemhistory">40dp</dimen>
+    <dimen name="heigth_tvicon_itemhistory">40dp</dimen>
+</resources>

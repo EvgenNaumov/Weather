@@ -19,12 +19,13 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.AIRPLANE_MODE" />
             </intent-filter>
         </activity>
 
         <service android:name="view.details.DetailsService"/>
+
 
     </application>
 

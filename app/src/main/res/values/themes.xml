@@ -13,4 +13,24 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="TextLatLonItemListWeatherStyle" >
+        <item name="paddingStart">20dp</item>
+        //<item name="android:layout_marginStart">2dp</item>
+        <item name="android:textSize">15dp</item>
+    </style>
+
+    <style name="ItemHistoryListWeatherHeaderText">
+        <item name="android:textSize">@dimen/margin_15_dp</item>
+        <item name="android:textStyle">italic</item>
+<!--        <item name="android:layout_marginEnd">4dp</item>-->
+    </style>
+
+    <style name="TextItemHistoryListWeatherStyle" >
+        <item name="paddingStart">20dp</item>
+        <item name="android:textSize">20dp</item>
+        <item name="android:layout_marginStart">4dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+    </style>
+
 </resources>

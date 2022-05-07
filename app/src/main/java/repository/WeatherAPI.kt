@@ -1,7 +1,7 @@
 package repository
 
-import Utils.YANDEX_API_KEY
-import Utils.YANDEX_ENDPOINT
+import utils.YANDEX_API_KEY
+import utils.YANDEX_ENDPOINT
 import repository.DTO.WeatherDTO
 import retrofit2.Call
 import retrofit2.http.GET
