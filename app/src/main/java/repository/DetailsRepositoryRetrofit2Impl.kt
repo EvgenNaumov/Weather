@@ -1,8 +1,8 @@
 package repository
 
-import Utils.TAG
-import Utils.URL_YANDEX_DOMAIN
-import Utils.convertDtoToModel
+import utils.TAG
+import utils.URL_YANDEX_DOMAIN
+import utils.convertDtoToModel
 import android.util.Log
 import com.example.appweather.BuildConfig
 import com.google.gson.GsonBuilder
@@ -49,7 +49,7 @@ class DetailsRepositoryRetrofit2Impl:DetailsRepositoryOne {
             }
 
             override fun onFailure(call: Call<WeatherDTO>, t: Throwable) {
-                callbackMy.onFail()
+                callbackMy.onFail(t.message.toString())
             }
 
         })

@@ -1,8 +1,8 @@
 package repository
 
 
-import Utils.URL_YANDEX_DOMAIN
-import Utils.YANDEX_API_KEY
+import utils.URL_YANDEX_DOMAIN
+import utils.YANDEX_API_KEY
 import android.os.Looper
 import android.util.Log
 import com.google.gson.Gson

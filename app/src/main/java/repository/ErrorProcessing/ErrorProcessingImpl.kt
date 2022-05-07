@@ -1,8 +1,8 @@
 package repository.ErrorProcessing
 
 
-import Utils.MyExceptionClient
-import Utils.MyExceptionServer
+import utils.MyExceptionClient
+import utils.MyExceptionServer
 import android.util.Log
 import repository.DetailsRepositoryRetrofit2Impl
 

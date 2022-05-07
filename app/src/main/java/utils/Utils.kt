@@ -1,7 +1,5 @@
-package Utils
+package utils
 
-import android.app.Activity
-import androidx.room.Room
 import com.example.appweather.BuildConfig
 import repository.City
 import repository.DTO.FactDTO
@@ -9,8 +7,6 @@ import repository.Weather
 import repository.DTO.WeatherDTO
 import repository.getDefaultCity
 import room.HistoryEntity
-import room.MyDB
-import view.main.MyApp
 
 const val WEATHER_APY_KEY           = BuildConfig.WEATHER_API_KEY
 const val YANDEX_API_KEY            = "X-Yandex-API-Key"
@@ -57,19 +53,11 @@ class MyExceptionClient(errorString:String = "",_infoErr:String = ""):Throwable(
 
 fun convertHistoryEntityToWeather(entityList: List<HistoryEntity>): List<Weather> {
     return entityList.map {
-        Weather(City(it.city, 0.0, 0.0), it.temperature, it.feelsLike, it.icon) // TODO HW было бы здорово научиться хранить в БД lat lon
+        Weather(City(it.city, it.lat, it.lon), it.temperature, it.feelsLike, it.icon) // TODO HW было бы здорово научиться хранить в БД lat lon
     }
 }
 
 fun convertWeatherToEntity(weather: Weather): HistoryEntity {
-    return HistoryEntity(0, weather.city.name, weather.temperature,weather.feelsLike, weather.icon)
+    return HistoryEntity(0, weather.city.name, weather.temperature,weather.feelsLike, weather.icon,"",weather.city.lat,weather.city.lon)
 }
 
-fun iniRoomDB(appContext: Activity){
-
-    val db = Room.databaseBuilder(appContext, MyDB::class.java, "test")
-        .allowMainThreadQueries() // TODO HW а вам нужно придумать что-то другое
-//                            //TODO HW сделать запрос не в главном потоке
-
-        .build()
-}

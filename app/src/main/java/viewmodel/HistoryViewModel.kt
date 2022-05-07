@@ -13,13 +13,13 @@ class HistoryViewModel(private val liveData: MutableLiveData<AppState> = Mutable
     }
 
     fun getAll(){
-        repository.getAllWeatherDetails(object :CallbackForAll{
+         repository.getAllWeatherDetails(object :CallbackForAll{
             override fun onResponse(listWeather: List<Weather>) {
                 liveData.postValue(AppState.Success(listWeather))
             }
 
-            override fun onFail() {
-                TODO("Not yet implemented")
+            override fun onFail(t:Throwable) {
+                liveData.postValue(AppState.Error(t))
             }
 
         })
@@ -28,7 +28,7 @@ class HistoryViewModel(private val liveData: MutableLiveData<AppState> = Mutable
     interface CallbackForAll {
         fun onResponse(listWeather: List<Weather>)
         // TODO HW Fail
-        fun onFail()
+        fun onFail(t:Throwable)
     }
 
 }
