@@ -19,6 +19,7 @@ import coil.ImageLoader
 import coil.decode.SvgDecoder
 import coil.load
 import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.example.appweather.R
 import com.example.appweather.databinding.FragmentDetailsBinding
 import repository.Weather
@@ -112,7 +113,10 @@ class DetailsFragment : Fragment() {
 //                     Picasso.get()?.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
 //                         ?.into(headericon)
 
-                    headericon.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png")
+                    headericon.load("https://freepngimg.com/thumb/city/36275-3-city-hd.png"){
+                            placeholder(R.drawable.ic_russia)
+                        error(R.drawable.ic_earth)
+                    }
                     icon.loadSvg("https://yastatic.net/weather/i/icons/blueye/color/svg/${weather.icon}.svg")
 
                 }

@@ -13,14 +13,13 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import view.main.MyApp
 import viewmodel.DetailsViewModel
 
 class DetailsRepositoryRetrofit2Impl:DetailsRepositoryOne {
     override fun getWeatherDetails(city: City, callbackMy: DetailsViewModel.Callback) {
-        val weatherAPI = Retrofit.Builder().apply {
-            baseUrl(URL_YANDEX_DOMAIN)
-            addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
-        }.build().create(WeatherAPI::class.java)
+
+        val weatherAPI = MyApp.getRetrofit().create(WeatherAPI::class.java)
 
 //        weatherAPI.getWeather(WEATHER_API_KEY,city.lat,city.lon).execute() синхронный вызов
         weatherAPI.getWeather(BuildConfig.WEATHER_API_KEY,city.lat,city.lon).enqueue(object :
@@ -45,6 +44,7 @@ class DetailsRepositoryRetrofit2Impl:DetailsRepositoryOne {
                           }
                       }
                   })
+
                 }
             }
 
