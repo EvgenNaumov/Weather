@@ -3,17 +3,16 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/drawable/ic_earth.xml" value="0.2435" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/drawable/ic_russia.xml" value="0.2435" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/activity_main.xml" value="0.2535612535612536" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_city_list.xml" value="0.26811594202898553" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_details.xml" value="0.36666666666666664" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/activity_main.xml" value="0.32518115942028986" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_details.xml" value="0.40764331210191085" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_history_weather_list.xml" value="0.245018115942029" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_hostory_weather_list_recycler_item.xml" value="0.245018115942029" />
         <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_main.xml" value="0.32518115942028986" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_weather_list.xml" value="0.1" />
-        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_weather_list_recycler_item.xml" value="0.36666666666666664" />
-        <entry key="..\:/android/Project/Weather/app/src/main/res/layout/fragment_details.xml" value="0.22" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_weather_list_recycler_item.xml" value="0.1" />
+        <entry key="..\:/GeekBrains/Kotlin_new/Weather/app/src/main/res/menu/menu.xml" value="0.36666666666666664" />
         <entry key="..\:/geekbrains/Kotlin_new/App_Project/AppWeather/app/src/main/res/layout/activity_main.xml" value="0.13768115942028986" />
         <entry key="..\:/geekbrains/Kotlin_new/App_Project/AppWeather/app/src/main/res/layout/fragment_main.xml" value="0.13768115942028986" />
+        <entry key="..\:/geekbrains/Kotlin_new/Weather/app/src/main/res/layout/fragment_history_weather_list_recycler_item.xml" value="0.41792656587473004" />
       </map>
     </option>
   </component>

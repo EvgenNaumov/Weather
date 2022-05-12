@@ -1,5 +1,7 @@
-package view.main
+package view.weatherlist
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +13,10 @@ import com.example.appweather.R
 import com.example.appweather.databinding.FragmentWeatherListBinding
 import repository.Weather
 import repository.showSnackbar
-import view.weatherlist.onItemListClickListener
+import utils.KEY_SP_FILE_NAME_1
+import utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
+import view.details.DetailsFragment
+import view.main.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
 
@@ -21,7 +26,9 @@ class WeatherListFragment : Fragment(), onItemListClickListener {
     private val binding get() = _binding!!
     private val adapter: WeatherListAdapter = WeatherListAdapter()
     private var isRussiantrue: Boolean = true
+    private var isRussianCityList: Boolean = true
     private lateinit var mainView:View
+    private lateinit var sp: SharedPreferences
 
     private val viewModel:MainViewModel by lazy {
         ViewModelProvider(this).get(MainViewModel::class.java)
@@ -56,20 +63,35 @@ class WeatherListFragment : Fragment(), onItemListClickListener {
 //        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         // в эот момент создается view а до этого null
         viewModel.getData().observe(viewLifecycleOwner, observer)
-        viewModel.getWeatherFromLocalSourceRus()
+        val sp = requireContext().getSharedPreferences(KEY_SP_FILE_NAME_1, Context.MODE_PRIVATE)
+        isRussianCityList = sp.getBoolean(KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN,true)
+        if(isRussianCityList) {
+            viewModel.getWeatherFromLocalSourceRus()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+        }else{
+            viewModel.getWeatherFromLocalSourceWorld()
+            binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+        }
+        isRussiantrue = !isRussianCityList
+
         binding.mainFragmentFAB.setOnClickListener { changeWeatherDataState(viewModel) }
     }
-
 
     private fun changeWeatherDataState(viewModel: MainViewModel) {
         if (isRussiantrue) {
             viewModel.getWeatherFromLocalSourceRus()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+            isRussianCityList = true
         } else {
             viewModel.getWeatherFromLocalSourceWorld()
             binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+            isRussianCityList = false
         }
-        isRussiantrue = !isRussiantrue
+        isRussiantrue = !isRussianCityList
+       val sp = requireContext().getSharedPreferences(KEY_SP_FILE_NAME_1, Context.MODE_PRIVATE)
+        val edit = sp.edit()
+        edit.putBoolean(KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN,isRussianCityList)
+        edit.apply()
     }
 
     private fun renderData(data: AppState) {

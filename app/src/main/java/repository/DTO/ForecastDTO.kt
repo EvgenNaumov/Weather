@@ -1,7 +1,10 @@
-package repository
+package repository.DTO
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class ForecastDTO(
     @SerializedName("date")
     val date: String,
@@ -11,12 +14,12 @@ data class ForecastDTO(
     val moon_code: Int,
     @SerializedName("moon_text")
     val moon_text: String,
-    @SerializedName("partDTOS")
-    val partDTOS: List<PartDTO>,
+//    @SerializedName("partDTOS")
+//    val partDTOS: List<PartDTO>,
     @SerializedName("sunrise")
     val sunrise: String,
     @SerializedName("sunset")
     val sunset: String,
     @SerializedName("week")
     val week: Int
-)
+):Parcelable
