@@ -10,5 +10,10 @@
     <string name="error">Error</string>
     <string name="reload">Reload</string>
     <string name="myThreadDB">myThreadDB</string>
+    <string name="content_provider">WWCP</string>
+    <string name="title_request_permissions_contacts">Доступ к контактам</string>
+    <string name="message_permissions_contacts">Для работы приложения требуется доступ к контактам</string>
+    <string name="title_request_permissions_phone">Доступ к номерам телефонов</string>
+    <string name="message_permissions_phone">Для работы приложения требуется доступ к телефонным номерам</string>
 
 </resources>
