@@ -49,6 +49,7 @@ class ContentProviderFragment : Fragment() {
 
     val REQUEST_CODE_CONTACTS = 999
     val REQUEST_CODE_PHONE_NUMBER = 888
+    val REQUEST_CODE_CALL_PHONE = 1
     private fun checkPermission() {
 
         var isGrantedREadContact = false
@@ -114,6 +115,8 @@ class ContentProviderFragment : Fragment() {
 
         var getPermissionsREAD_CONTACTS = false
         var getPermissionsREAD_PHONE_NUMBERS = false
+        var getPermissionsREAD_CALL_PHONE = false
+
         if (requestCode == REQUEST_CODE_CONTACTS) {
             for (i in permissions.indices) {
                 if (permissions[i] == android.Manifest.permission.READ_CONTACTS && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
@@ -169,17 +172,27 @@ class ContentProviderFragment : Fragment() {
                         textSize = 30f
                         text = name.plus( " phone ").plus(numberPhone)
                         setOnClickListener{
-                            Toast.makeText(requireContext(),text,Toast.LENGTH_SHORT).show()
-                            val pattern = "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]".toRegex()
-                            val dial = pattern.find(text)
-                            val phone = dial?.value
-                            if (phone!=null) {
-                                startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null)))
-                            }
+                            makeCallPhone(numberPhone)
                         }
                     })
                 }
             }
+        }
+    }
+
+    private fun makeCallPhone(number:String) {
+        Toast.makeText(requireContext(),number,Toast.LENGTH_SHORT).show()
+        if (number!=null) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.CALL_PHONE
+                ) == PackageManager.PERMISSION_GRANTED){
+                startActivity(Intent(Intent.ACTION_CALL, Uri.parse("tel:$number")))
+            } else {
+                requestPermissions(arrayOf(android.Manifest.permission.CALL_PHONE), 1)
+            }
+
+
         }
     }
 
