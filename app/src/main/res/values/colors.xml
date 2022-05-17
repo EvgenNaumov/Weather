@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="loadingBackground">#FFFFFFFF</color>
     <color name="fragmentBackground">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FF3700B3</color>
 </resources>
