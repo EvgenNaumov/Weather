@@ -32,6 +32,7 @@ import view.details.DetailsFragment
 import view.main.onItemListClickListener
 import viewmodel.AppState
 import viewmodel.MainViewModel
+import java.util.*
 
 class WeatherListFragment : Fragment(), onItemListClickListener {
 
@@ -187,7 +188,8 @@ class WeatherListFragment : Fragment(), onItemListClickListener {
     }
 
     fun getAddressByLocation(location: Location) {
-        val geocoder = Geocoder(requireContext())
+       // val geocoder = Geocoder(requireContext())
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
         val timeStump = System.currentTimeMillis()
         Thread {
             val addressText = geocoder.getFromLocation(location.latitude, location.longitude, 1)
