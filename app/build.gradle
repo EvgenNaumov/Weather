@@ -1,7 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-android-extensions'
+    id 'kotlin-parcelize'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
 
@@ -46,6 +46,7 @@ android {
 
 dependencies {
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
     def room_version = "2.3.0"
     apply plugin: 'kotlin-kapt'
     implementation "androidx.room:room-runtime:$room_version"

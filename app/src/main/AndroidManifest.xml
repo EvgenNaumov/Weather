@@ -34,7 +34,8 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBPtwN8LQCwjFQ_zgrx6RdTftlvVvMokz8" />
+            android:value="AIzaSyBZIW9MRQ7Y5zFmG3rhJAeREQNwmdP5iUI" />
+        <!--            android:value="${MAPS_API_KEY}" -->
 
         <activity
             android:name="view.main.MainActivity"
@@ -49,6 +50,8 @@
         </activity>
 
         <service android:name="view.details.DetailsService" />
+        <service android:name=".GeoFenceService"/>
+        <receiver android:name=".GeofenceBroadcastReceiver"/>
     </application>
 
 </manifest>
