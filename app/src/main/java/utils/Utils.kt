@@ -25,7 +25,7 @@ const val KEY_CONNECTION             = "key5"
 
 const val KEY_SP_FILE_NAME_1 = "fileName1"
 const val KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN = "is_russian"
-
+const val GEOFENCE_EXPIRATION_IN_MILLISECONDS:Long = 1000
 class Utils {
 
 }

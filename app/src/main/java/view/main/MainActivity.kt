@@ -1,21 +1,33 @@
 package view.main
 
+import android.app.PendingIntent
 import utils.KEY_SP_FILE_NAME_1
 import utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
 import android.content.Context
+import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import com.example.appweather.GeofenceBroadcastReceiver
 import com.example.appweather.MapsFragment
 import com.example.appweather.R
 import view.ContentProviderFragment
 import view.historylist.HistoryWeatherListFragment
 import view.weatherlist.WeatherListFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
+
+
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofence() and removeGeofences().
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

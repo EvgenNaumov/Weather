@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.*
 import repository.City
 import repository.Weather
 import repository.createAndShow
+import utils.GEOFENCE_EXPIRATION_IN_MILLISECONDS
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -87,8 +88,11 @@ class MapsFragment : Fragment() {
     private fun lisenerDialogAdd(stringId: String, lat: Double, lon: Double) {
 
         val geofence: Geofence = Geofence.Builder()
-            .setRequestId("")
-            .setCircularRegion(lat, lon, 200f) as (Geofence)
+            .setRequestId(stringId)
+            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+            .setCircularRegion(lat, lon, 200f)
+            .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+            .build()
 
         listGeofence.add(geofence)
 
@@ -97,7 +101,7 @@ class MapsFragment : Fragment() {
             .addGeofences(listGeofence).build()
 
         val geoService = Intent(context, GeoFenceService::class.java)
-        val pendingIntent =
+        val geofencePendingIntent =
             PendingIntent.getService(context, 0, geoService, PendingIntent.FLAG_UPDATE_CURRENT)
 
         if (ActivityCompat.checkSelfPermission(
@@ -115,13 +119,20 @@ class MapsFragment : Fragment() {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            geofencingClient.addGeofences(geofencingRequest, pendingIntent)
-
+//            geofencingClient.addGeofences(geofencingRequest, pendingIntent)
+            checkPermission()
             return
         } else {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
         }
 
+    }
+
+    private fun getGeofencingRequest(): GeofencingRequest {
+        return GeofencingRequest.Builder().apply {
+            setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+            addGeofences(listGeofence)
+        }.build()
     }
 
     private fun checkPermission() {
@@ -130,7 +141,7 @@ class MapsFragment : Fragment() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-
+//            geofencingClient.addGeofences(getGeofencingRequest(),)
         } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
             explain()
         } else {
@@ -147,6 +158,7 @@ class MapsFragment : Fragment() {
         if (requestCode == REQUEST_CODE) {
             for (i in permissions.indices) {
                 if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    getGeofencingRequest()
 
                 } else {
                     explain()
