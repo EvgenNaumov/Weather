@@ -52,4 +52,13 @@ string in this file.
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">AIzaSyBZIW9MRQ7Y5zFmG3rhJAeREQNwmdP5iUI</string>
     <string name="dialog_message_geofence">Добавить для точки геозону?</string>
     <string name="dialog_message_geofence_add">Добавить</string>
+
+    <string name="title_notification_low">Вам пришло уведомление</string>
+    <string name="text_notofication_low">Вам назначена выплата в 1 млн.</string>
+
+    <string name="title_notification_high">Вам пришло важные уведомление</string>
+    <string name="text_notofication_high">Вам назначена выплата в 10 млн.</string>
+
+    <string name="server_key_fcm">AAAAXKvI_Mw:APA91bGYEmdg4nIie_vzoY-p7ivld3jW8hjpF1-M137cuFoIK2lRJ1zUenrGIh2dpXnnUUuCj9Q5Z3a_xybb6SmHPdZW7RSC8cUy57FE9z2C6SFoySvL1-9xiLofn0vnw0AE_0i08zOp</string>
+
 </resources>

@@ -38,12 +38,10 @@ import utils.GEOFENCE_EXPIRATION_IN_MILLISECONDS
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MapsFragment : Fragment() {
+class MapsFragment : Fragment(){
 
     private var _binding: FragmentMapsMainBinding? = null
     private val binding get() = _binding!!
-
-    lateinit var geofencingClient: GeofencingClient
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
@@ -83,46 +81,30 @@ class MapsFragment : Fragment() {
         }
     }
 
-    val listGeofence = mutableListOf<Geofence>()
+    lateinit var geofencingClient: GeofencingClient
+    lateinit var geofencePendingIntent:PendingIntent
+
     val REQUEST_CODE = 111
     private fun lisenerDialogAdd(stringId: String, lat: Double, lon: Double) {
 
-        val geofence: Geofence = Geofence.Builder()
-            .setRequestId(stringId)
-            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
-            .setCircularRegion(lat, lon, 200f)
-            .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
-            .build()
+        val dataGeofence:GeofenceData = GeofenceData()
 
-        listGeofence.add(geofence)
-
-        val geofencingRequest = GeofencingRequest.Builder()
-            .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            .addGeofences(listGeofence).build()
+        GeofenceData.listGeofence.add(dataGeofence.getGeofence(stringId,lat,lon,GeofenceData.RADIUS))
 
         val geoService = Intent(context, GeoFenceService::class.java)
-        val geofencePendingIntent =
+        geofencePendingIntent =
             PendingIntent.getService(context, 0, geoService, PendingIntent.FLAG_UPDATE_CURRENT)
 
         if (ActivityCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-            }
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-//            geofencingClient.addGeofences(geofencingRequest, pendingIntent)
+            ) == PackageManager.PERMISSION_GRANTED ) {
+            checkPermission()
+        }else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
             checkPermission()
             return
-        } else {
+            }
+         else {
             requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
         }
 
@@ -131,7 +113,7 @@ class MapsFragment : Fragment() {
     private fun getGeofencingRequest(): GeofencingRequest {
         return GeofencingRequest.Builder().apply {
             setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
-            addGeofences(listGeofence)
+            addGeofences(GeofenceData.listGeofence)
         }.build()
     }
 
@@ -141,7 +123,7 @@ class MapsFragment : Fragment() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-//            geofencingClient.addGeofences(getGeofencingRequest(),)
+            geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
         } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
             explain()
         } else {
@@ -158,7 +140,6 @@ class MapsFragment : Fragment() {
         if (requestCode == REQUEST_CODE) {
             for (i in permissions.indices) {
                 if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                    getGeofencingRequest()
 
                 } else {
                     explain()

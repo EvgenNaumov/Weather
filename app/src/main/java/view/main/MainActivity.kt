@@ -1,19 +1,24 @@
 package view.main
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import utils.KEY_SP_FILE_NAME_1
 import utils.KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import android.net.ConnectivityManager
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.core.app.NotificationCompat
 import com.example.appweather.GeofenceBroadcastReceiver
 import com.example.appweather.MapsFragment
 import com.example.appweather.R
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import view.ContentProviderFragment
 import view.historylist.HistoryWeatherListFragment
 import view.weatherlist.WeatherListFragment
@@ -46,6 +51,16 @@ class MainActivity : AppCompatActivity(){
 
         val defaultValueIsRussian = true
         sp.getBoolean(KEY_SP_FILE_NAME_1_KEY_IS_RUSSIAN, defaultValueIsRussian)
+
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("mylogs_push", "Fetching FCM registration token failed", task.exception)
+                return@OnCompleteListener
+            }
+            val token = task.result
+            Log.d("mylogs_push", "$token")
+        })
+
 
     }
 
