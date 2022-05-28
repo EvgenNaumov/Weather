@@ -51,7 +51,7 @@ class ServiceFCM: FirebaseMessagingService() {
             this,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE
         )
 
         //getString(R.string.title_notification_low), getString(R.string.text_notofication_low)

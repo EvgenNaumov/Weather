@@ -50,6 +50,7 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
 
     private var _binding: FragmentMapsMainBinding? = null
     private val binding get() = _binding!!
+    private var isPermissionGranted: Boolean = false
 
     @SuppressLint("MissingPermission")
     private val callback = OnMapReadyCallback { googleMap ->
@@ -75,17 +76,20 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
         }
 
         map.uiSettings.isZoomControlsEnabled = true
-        map.uiSettings.isMyLocationButtonEnabled = true
         map.uiSettings.isMapToolbarEnabled = false
+        map.uiSettings.isMyLocationButtonEnabled = true
 
         //внести проверки в ДЗ (открытие карт
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            map.isMyLocationEnabled = true
-
+        checkPermission()
+        context?.let {
+            val isPermissionGranted =
+                ContextCompat.checkSelfPermission(
+                    it,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) ==
+                        PackageManager.PERMISSION_GRANTED
+            map.isMyLocationEnabled = isPermissionGranted
+            map.uiSettings.isMyLocationButtonEnabled = isPermissionGranted
         }
     }
 
@@ -111,30 +115,36 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
     }
 
     private fun addGeofences(igG: String) {
-        if (!checkPermission()) {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            var foundId = false
+            for (a: Geofence in GeofenceData.listGeofence) {
+                if (a.requestId == igG) {
+                    foundId = true
+                }
+            }
+            if (foundId) {
+                return
+            }
+            geofencingClient.addGeofences(getGeofencingRequest(), getGfPendingIntent())
+                .addOnCompleteListener(this)
+        } else {
             view?.let {
                 Snackbar.make(
                     requireContext(),
                     it, "недостаточно прав", Snackbar.LENGTH_SHORT
                 ).show()
             }
-            return
         }
-        var foundId = false
-        for (a: Geofence in GeofenceData.listGeofence) {
-            if (a.requestId == igG) {
-                foundId = true
-            }
-        }
-        if (foundId) {
-            return
-        }
-        geofencingClient.addGeofences(getGeofencingRequest(), getGfPendingIntent())
-            .addOnCompleteListener(this)
     }
 
+
     private fun removeGeofences() {
-        if (!checkPermission()) {
+        if (!checkPermissionGranted()) {
             return
         }
         geofencingClient.removeGeofences(getGfPendingIntent()).addOnCompleteListener(this)
@@ -157,11 +167,22 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
         return geofencePendingIntent
     }
 
-    private fun checkPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
+    private fun checkPermissionGranted(): Boolean {
+        return isPermissionGranted
+    }
+
+    private fun checkPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            isPermissionGranted = true
+        } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            explain()
+        } else {
+            mRequestPermission()
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -173,7 +194,7 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
         if (requestCode == REQUEST_CODE) {
             for (i in permissions.indices) {
                 if (permissions[i] == Manifest.permission.ACCESS_FINE_LOCATION && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-
+                    isPermissionGranted = true
                 } else {
                     explain()
                 }
@@ -282,20 +303,23 @@ class MapsFragment : Fragment(), OnCompleteListener<Void> {
         binding.buttonSearch.setOnClickListener {
             val searchText = binding.searchAddress.text.toString()
             // TODO: сделать проверку  searchText
-            if (searchText.isEmpty() || searchText.isBlank()) {
+            if (searchText.isNullOrEmpty()) {
                 binding.root.createAndShow(
                     "Результат поиска",
                     "Нечего не найдено. Измените запрос",
                     {})
+                return@setOnClickListener
             }
             val geocoder = Geocoder(requireContext(), Locale.getDefault())
             val results = geocoder.getFromLocationName(searchText, 1)
             // TODO: проверка results
             if (results.size == 0) {
-                binding.root.createAndShow(
-                    "Результат поиска",
-                    "Нечего не найдено. Измените запрос",
-                    {})
+                Snackbar.make(requireContext(),binding.root,"Нечего не найдено. Измените запрос",Snackbar.LENGTH_SHORT).show()
+                return@setOnClickListener
+//                binding.root.createAndShow(
+//                    "Результат поиска",
+//                    "Нечего не найдено. Измените запрос",
+//                    {})
             }
             val location = LatLng(results[0].latitude, results[0].longitude)
             val marker = setMarker(

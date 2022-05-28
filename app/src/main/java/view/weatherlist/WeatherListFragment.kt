@@ -225,7 +225,7 @@ class WeatherListFragment : Fragment(), onItemListClickListener {
     private val locationListenerDistance = object : LocationListener {
         override fun onLocationChanged(location: Location) {
             Log.d("@@@", location.toString())
-            getAddressByLocation(location)
+//            getAddressByLocation(location)
         }
 
         override fun onProviderDisabled(provider: String) {

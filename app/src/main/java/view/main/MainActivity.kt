@@ -1,5 +1,6 @@
 package view.main
 
+import Message.ServiceFCM
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -19,6 +20,8 @@ import com.example.appweather.MapsFragment
 import com.example.appweather.R
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
+import utils.TAG
+import utils.Utils
 import view.ContentProviderFragment
 import view.historylist.HistoryWeatherListFragment
 import view.weatherlist.WeatherListFragment
@@ -58,10 +61,8 @@ class MainActivity : AppCompatActivity(){
                 return@OnCompleteListener
             }
             val token = task.result
-            Log.d("mylogs_push", "$token")
+            Log.d(TAG, "$token")
         })
-
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
