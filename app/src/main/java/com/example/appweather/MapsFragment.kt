@@ -17,6 +17,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.appweather.databinding.FragmentMapsMainBinding
@@ -31,14 +33,20 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_SHORT
+import com.google.android.material.snackbar.Snackbar
 import repository.City
 import repository.Weather
 import repository.createAndShow
 import utils.GEOFENCE_EXPIRATION_IN_MILLISECONDS
+import utils.TAG
+import java.time.Duration
 import java.util.*
 import kotlin.collections.ArrayList
 
-class MapsFragment : Fragment(){
+class MapsFragment : Fragment(), OnCompleteListener<Void> {
 
     private var _binding: FragmentMapsMainBinding? = null
     private val binding get() = _binding!!
@@ -50,6 +58,7 @@ class MapsFragment : Fragment(){
         val moscow = LatLng(55.0, 37.0)
         map.addMarker(MarkerOptions().position(moscow).title("Marker in Moscow"))
         map.moveCamera(CameraUpdateFactory.newLatLng(moscow))
+        map.maxZoomLevel
         map.setOnMapLongClickListener {
             addMarkerToArray(it)
             drawLine()
@@ -61,8 +70,7 @@ class MapsFragment : Fragment(){
             } else {
                 marker.showInfoWindow()
             }
-//            showGeofenceDialog(marker, location: Location)
-            lisenerDialogAdd(marker.id, marker.position.latitude, marker.position.longitude)
+            showGeofenceDialog(marker.id, marker.position.latitude, marker.position.longitude)
             false
         }
 
@@ -82,32 +90,54 @@ class MapsFragment : Fragment(){
     }
 
     lateinit var geofencingClient: GeofencingClient
-    lateinit var geofencePendingIntent:PendingIntent
+    lateinit var geofencePendingIntent: PendingIntent
 
     val REQUEST_CODE = 111
-    private fun lisenerDialogAdd(stringId: String, lat: Double, lon: Double) {
+    private fun GeofencesDialogAdd(stringId: String, lat: Double, lon: Double) {
 
-        val dataGeofence:GeofenceData = GeofenceData()
+        val dataGeofence: GeofenceData = GeofenceData()
 
-        GeofenceData.listGeofence.add(dataGeofence.getGeofence(stringId,lat,lon,GeofenceData.RADIUS))
+        GeofenceData.listGeofence.add(
+            dataGeofence.getGeofence(
+                stringId,
+                lat,
+                lon,
+                GeofenceData.RADIUS
+            )
+        )
+        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
 
-        val geoService = Intent(context, GeoFenceService::class.java)
-        geofencePendingIntent =
-            PendingIntent.getService(context, 0, geoService, PendingIntent.FLAG_UPDATE_CURRENT)
+        addGeofences(stringId)
+    }
 
-        if (ActivityCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED ) {
-            checkPermission()
-        }else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            checkPermission()
-            return
+    private fun addGeofences(igG: String) {
+        if (!checkPermission()) {
+            view?.let {
+                Snackbar.make(
+                    requireContext(),
+                    it, "недостаточно прав", Snackbar.LENGTH_SHORT
+                ).show()
             }
-         else {
-            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE)
+            return
         }
+        var foundId = false
+        for (a: Geofence in GeofenceData.listGeofence) {
+            if (a.requestId == igG) {
+                foundId = true
+            }
+        }
+        if (foundId) {
+            return
+        }
+        geofencingClient.addGeofences(getGeofencingRequest(), getGfPendingIntent())
+            .addOnCompleteListener(this)
+    }
 
+    private fun removeGeofences() {
+        if (!checkPermission()) {
+            return
+        }
+        geofencingClient.removeGeofences(getGfPendingIntent()).addOnCompleteListener(this)
     }
 
     private fun getGeofencingRequest(): GeofencingRequest {
@@ -117,18 +147,21 @@ class MapsFragment : Fragment(){
         }.build()
     }
 
-    private fun checkPermission() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            geofencingClient.addGeofences(getGeofencingRequest(), geofencePendingIntent)
-        } else if (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            explain()
-        } else {
-            mRequestPermission()
+    private fun getGfPendingIntent(): PendingIntent {
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent
         }
+        val geoService = Intent(context, GeoFenceService::class.java)
+        geofencePendingIntent =
+            PendingIntent.getService(context, 0, geoService, PendingIntent.FLAG_UPDATE_CURRENT)
+        return geofencePendingIntent
+    }
+
+    private fun checkPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(
@@ -169,13 +202,14 @@ class MapsFragment : Fragment(){
 
         }
     }
-    private fun showGeofenceDialog(markerId: String, location: Location) {
+
+    private fun showGeofenceDialog(markerId: String, lat: Double, lon: Double) {
         activity?.let {
             androidx.appcompat.app.AlertDialog.Builder(it)
-                .setTitle(getString(R.string.dialog_address_title))
+                .setTitle(getString(R.string.title_geofences_dialog))
                 .setMessage(getString(R.string.dialog_message_geofence))
                 .setPositiveButton(getString(R.string.dialog_message_geofence_add)) { _, _ ->
-                    lisenerDialogAdd(markerId, location.latitude, location.longitude)
+                    GeofencesDialogAdd(markerId, lat, lon)
                 }
                 .setNegativeButton(getString(R.string.dialog_button_close)) { dialog, _ -> dialog.dismiss() }
                 .create()
@@ -241,9 +275,7 @@ class MapsFragment : Fragment(){
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
 
-        geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         initViewSearchAddres()
-
     }
 
     private fun initViewSearchAddres() {
@@ -285,5 +317,18 @@ class MapsFragment : Fragment(){
 
         }
 
+    }
+
+    override fun onComplete(task: Task<Void>) {
+        Toast.makeText(context, "событие", Toast.LENGTH_SHORT)
+        if (task.isSuccessful) {
+            Log.d(TAG, "onComplete:${task.result.toString()}")
+        } else {
+            val errorMessage: String = GeofenceErrorMessages().getGeofenceError(
+                requireContext(),
+                task.exception as Exception
+            )
+            Log.d(TAG, "onComplete: $errorMessage")
+        }
     }
 }

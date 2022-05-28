@@ -18,6 +18,11 @@ class GeofenceBroadcastReceiver:BroadcastReceiver() {
                 Log.e(TAG, errorMessage)
                 return
             }
+        } else {
+            val geofencesTransition = geofencingEvent?.triggeringGeofences
+            if (geofencesTransition!=null){
+                Log.d(TAG, "onReceive: ${geofencesTransition[0]}")
+            }
         }
 
     }

@@ -60,5 +60,6 @@ string in this file.
     <string name="text_notofication_high">Вам назначена выплата в 10 млн.</string>
 
     <string name="server_key_fcm">AAAAXKvI_Mw:APA91bGYEmdg4nIie_vzoY-p7ivld3jW8hjpF1-M137cuFoIK2lRJ1zUenrGIh2dpXnnUUuCj9Q5Z3a_xybb6SmHPdZW7RSC8cUy57FE9z2C6SFoySvL1-9xiLofn0vnw0AE_0i08zOp</string>
+    <string name="title_geofences_dialog">Добавление зоны контроля</string>
 
 </resources>
