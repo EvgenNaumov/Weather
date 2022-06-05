@@ -31,9 +31,18 @@ android {
     }
 
     buildTypes {
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            versionNameSuffix '-debug'
+        }
+
+        beta {
+            initWith debug
+            versionNameSuffix "-beta"
         }
     }
     compileOptions {
