@@ -23,6 +23,20 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file("password.properties").newDataInputStream())
+            def password = properties.getProperty("password")
+
+            storeFile file("weather_1919.jks")
+            storePassword password
+            keyAlias 'weather_1919'
+            keyPassword password
+        }
+    }
+
     buildTypes.each {
         Properties properties = new Properties()
         properties.load(project.rootProject.file("apikey.properties").newDataInputStream())
@@ -33,8 +47,11 @@ android {
     buildTypes {
 
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            multiDexEnabled true
+
         }
         debug {
             versionNameSuffix '-debug'
@@ -51,6 +68,15 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+    flavorDimensions 'version'
+    productFlavors {
+        free {
+            dimension 'version'
+        }
+        paid {
+            dimension 'version'
+        }
     }
 }
 
